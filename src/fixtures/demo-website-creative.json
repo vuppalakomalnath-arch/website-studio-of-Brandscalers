@@ -1,0 +1,349 @@
+{
+  "schemaVersion": "1.0",
+  "projectId": "proj-apex-creative-03",
+  "businessProfileId": "prof-apex-03",
+  "design": {
+    "family": "creative",
+    "preset": "Dark premium",
+    "tokens": {
+      "accent": "#d4a95a",
+      "ink": "#f1ece2",
+      "bg": "#0f0f10",
+      "surface": "#18181a",
+      "footerBg": "#070708",
+      "font": "playfair-inter",
+      "headWeight": "500",
+      "headCase": "normal",
+      "radius": "sharp",
+      "buttons": "outline",
+      "surface_style": "outlined",
+      "images": "follow",
+      "density": "airy",
+      "align": "center",
+      "motion": "none",
+      "mode": "dark"
+    }
+  },
+  "pages": [
+    {
+      "id": "page-home",
+      "slug": "home",
+      "title": "Home",
+      "purpose": "Position Apex as an elite digital product and AI engineering consultancy.",
+      "seo": {
+        "title": "Apex Digital Dynamics | High-Stakes Digital Product Engineering",
+        "description": "Bespoke digital architecture, AI system integration, and rapid enterprise product design."
+      },
+      "sections": [
+        {
+          "id": "sec-hdr-c1",
+          "type": "site-header",
+          "version": 1,
+          "visible": true,
+          "props": {
+            "businessName": "Apex Digital Dynamics",
+            "tagline": "Architects of Autonomous Systems",
+            "navLinks": [
+              { "label": "Overview", "slug": "home" },
+              { "label": "Expertise", "slug": "services" },
+              { "label": "Case Studies", "slug": "about" },
+              { "label": "Contact", "slug": "contact" }
+            ],
+            "cta": {
+              "label": "Initiate Brief",
+              "type": "internal-link",
+              "target": "contact",
+              "style": "primary"
+            }
+          }
+        },
+        {
+          "id": "sec-hero-c1",
+          "type": "hero-centered",
+          "version": 1,
+          "visible": true,
+          "props": {
+            "eyebrow": "Enterprise Product Engineering",
+            "title": "Engineering High-Velocity Digital Architecture",
+            "lead": "We partner with visionary enterprises and Series-B+ scaleups to conceive, ship, and scale mission-critical digital products.",
+            "primaryCta": {
+              "label": "Schedule Architecture Brief",
+              "type": "internal-link",
+              "target": "contact",
+              "style": "primary"
+            },
+            "secondaryCta": {
+              "label": "View Case Studies",
+              "type": "internal-link",
+              "target": "about",
+              "style": "outline"
+            },
+            "trustMarkers": [
+              "$1.2B+ Portfolio Value Created",
+              "Sub-50ms Global Infrastructure",
+              "SOC2 Type II Certified Practice"
+            ],
+            "backgroundVariant": "surface"
+          }
+        },
+        {
+          "id": "sec-svc-c1",
+          "type": "service-grid",
+          "version": 1,
+          "visible": true,
+          "props": {
+            "eyebrow": "Core Capabilities",
+            "heading": "Specialized Engineering Practice Areas",
+            "subheading": "Multidisciplinary squads embedded directly with leadership teams.",
+            "services": [
+              {
+                "id": "ap-1",
+                "title": "Agentic AI & LLM Systems",
+                "description": "Production-grade autonomous agent pipelines, deterministic validation boundaries, and evaluation suites.",
+                "badge": "AI Engineering"
+              },
+              {
+                "id": "ap-2",
+                "title": "Cloud-Native Platforms",
+                "description": "Event-driven micro-architectures, distributed state synchronization, and zero-trust security postures.",
+                "badge": "Distributed Systems"
+              },
+              {
+                "id": "ap-3",
+                "title": "Next-Gen Product Design",
+                "description": "Precision interactive interfaces, generative UI systems, and design tokens built for scale.",
+                "badge": "Product Design"
+              }
+            ],
+            "columns": "3"
+          }
+        },
+        {
+          "id": "sec-ftr-c1",
+          "type": "site-footer",
+          "version": 1,
+          "visible": true,
+          "props": {
+            "businessName": "Apex Digital Dynamics",
+            "tagline": "Precision digital engineering for market leaders.",
+            "copyrightYear": 2026,
+            "links": [
+              { "label": "Overview", "slug": "home" },
+              { "label": "Expertise", "slug": "services" },
+              { "label": "Case Studies", "slug": "about" },
+              { "label": "Contact", "slug": "contact" }
+            ],
+            "demoNotice": "Demo presentation website created with Website Studio 2.0"
+          }
+        }
+      ]
+    },
+    {
+      "id": "page-about",
+      "slug": "about",
+      "title": "Case Studies",
+      "purpose": "Demonstrate technical competence through verified client case studies.",
+      "seo": {
+        "title": "Client Case Studies | Apex Digital Dynamics",
+        "description": "Review recent enterprise product deliveries and technical benchmarks."
+      },
+      "sections": [
+        {
+          "id": "sec-hdr-c2",
+          "type": "site-header",
+          "version": 1,
+          "visible": true,
+          "props": {
+            "businessName": "Apex Digital Dynamics",
+            "navLinks": [
+              { "label": "Overview", "slug": "home" },
+              { "label": "Expertise", "slug": "services" },
+              { "label": "Case Studies", "slug": "about" },
+              { "label": "Contact", "slug": "contact" }
+            ]
+          }
+        },
+        {
+          "id": "sec-testi-c1",
+          "type": "testimonial-list",
+          "version": 1,
+          "visible": true,
+          "props": {
+            "eyebrow": "Enterprise References",
+            "heading": "Trusted by Technical Founders",
+            "subheading": "Leadership feedback from scaleup CTOs and VP Engineers.",
+            "isDemoData": true,
+            "testimonials": [
+              {
+                "id": "t-c1",
+                "quote": "Apex completely transformed our core platform latency while deploying our first production LLM inference pipeline. Exceptional engineering rigor.",
+                "author": "Dr. Marcus Vance",
+                "roleOrContext": "Chief Technology Officer, Synthetix AI",
+                "rating": 5,
+                "verified": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "sec-ftr-c2",
+          "type": "site-footer",
+          "version": 1,
+          "visible": true,
+          "props": {
+            "businessName": "Apex Digital Dynamics",
+            "copyrightYear": 2026,
+            "links": [
+              { "label": "Overview", "slug": "home" },
+              { "label": "Expertise", "slug": "services" },
+              { "label": "Case Studies", "slug": "about" },
+              { "label": "Contact", "slug": "contact" }
+            ],
+            "demoNotice": "Demo presentation website created with Website Studio 2.0"
+          }
+        }
+      ]
+    },
+    {
+      "id": "page-services",
+      "slug": "services",
+      "title": "Expertise",
+      "purpose": "Detailed capabilities and engagement models.",
+      "seo": {
+        "title": "Engineering Expertise | Apex Digital Dynamics",
+        "description": "Detailed breakdown of our architecture, security, and AI delivery squads."
+      },
+      "sections": [
+        {
+          "id": "sec-hdr-c3",
+          "type": "site-header",
+          "version": 1,
+          "visible": true,
+          "props": {
+            "businessName": "Apex Digital Dynamics",
+            "navLinks": [
+              { "label": "Overview", "slug": "home" },
+              { "label": "Expertise", "slug": "services" },
+              { "label": "Case Studies", "slug": "about" },
+              { "label": "Contact", "slug": "contact" }
+            ]
+          }
+        },
+        {
+          "id": "sec-faq-c1",
+          "type": "faq-accordion",
+          "version": 1,
+          "visible": true,
+          "props": {
+            "eyebrow": "Engagement Framework",
+            "heading": "Frequently Asked Questions",
+            "subheading": "How we integrate with internal engineering organizations.",
+            "items": [
+              {
+                "id": "faq-c1",
+                "question": "What is the typical sprint cadence?",
+                "answer": "We operate in disciplined two-week delivery cycles with continuous integration, daily asynchronous standups, and deployable artifacts at every gate."
+              },
+              {
+                "id": "faq-c2",
+                "question": "Who owns intellectual property?",
+                "answer": "100% of code, models, weights, and architectural documentation belongs exclusively to the client from commit zero."
+              }
+            ]
+          }
+        },
+        {
+          "id": "sec-ftr-c3",
+          "type": "site-footer",
+          "version": 1,
+          "visible": true,
+          "props": {
+            "businessName": "Apex Digital Dynamics",
+            "copyrightYear": 2026,
+            "links": [
+              { "label": "Overview", "slug": "home" },
+              { "label": "Expertise", "slug": "services" },
+              { "label": "Case Studies", "slug": "about" },
+              { "label": "Contact", "slug": "contact" }
+            ],
+            "demoNotice": "Demo presentation website created with Website Studio 2.0"
+          }
+        }
+      ]
+    },
+    {
+      "id": "page-contact",
+      "slug": "contact",
+      "title": "Contact",
+      "purpose": "Technical briefing enquiry form.",
+      "seo": {
+        "title": "Initiate Architecture Brief | Apex Digital Dynamics",
+        "description": "Direct inquiry channel for engineering leaders and founders."
+      },
+      "sections": [
+        {
+          "id": "sec-hdr-c4",
+          "type": "site-header",
+          "version": 1,
+          "visible": true,
+          "props": {
+            "businessName": "Apex Digital Dynamics",
+            "navLinks": [
+              { "label": "Overview", "slug": "home" },
+              { "label": "Expertise", "slug": "services" },
+              { "label": "Case Studies", "slug": "about" },
+              { "label": "Contact", "slug": "contact" }
+            ]
+          }
+        },
+        {
+          "id": "sec-form-c1",
+          "type": "contact-form",
+          "version": 1,
+          "visible": true,
+          "props": {
+            "eyebrow": "Direct Enquiry",
+            "heading": "Initiate an Architecture Brief",
+            "subheading": "Connect directly with a Principal Engineer. We review briefs within 12 hours.",
+            "fields": [
+              { "name": "name", "label": "Full Name", "type": "text", "required": true },
+              { "name": "workEmail", "label": "Work Email", "type": "email", "required": true },
+              { "name": "company", "label": "Company & Stage", "type": "text", "required": true },
+              { "name": "projectSummary", "label": "Technical Brief & Timeline", "type": "textarea", "required": true }
+            ],
+            "submitButtonText": "Submit Architecture Brief (Demo Mode)",
+            "isDemoMode": true,
+            "successMessage": "Thank you. Your architecture brief has been registered with Apex Digital (Demo Mode)."
+          }
+        },
+        {
+          "id": "sec-ftr-c4",
+          "type": "site-footer",
+          "version": 1,
+          "visible": true,
+          "props": {
+            "businessName": "Apex Digital Dynamics",
+            "copyrightYear": 2026,
+            "links": [
+              { "label": "Overview", "slug": "home" },
+              { "label": "Expertise", "slug": "services" },
+              { "label": "Case Studies", "slug": "about" },
+              { "label": "Contact", "slug": "contact" }
+            ],
+            "demoNotice": "Demo presentation website created with Website Studio 2.0"
+          }
+        }
+      ]
+    }
+  ],
+  "createdAt": "2026-10-20T02:00:00.000Z",
+  "updatedAt": "2026-10-20T02:00:00.000Z",
+  "generation": {
+    "model": "gemini-3",
+    "promptVersion": "v1.0",
+    "estimatedCredits": 190,
+    "actualCredits": 190,
+    "durationMs": 4100,
+    "isMocked": true
+  }
+}

@@ -1,0 +1,600 @@
+{
+  "schemaVersion": "1.0",
+  "projectId": "proj-brightline-clinic-01",
+  "businessProfileId": "prof-brightline-01",
+  "design": {
+    "family": "local-service",
+    "preset": "Warm clinic",
+    "tokens": {
+      "accent": "#f58420",
+      "ink": "#212529",
+      "bg": "#ffffff",
+      "surface": "#fff7f0",
+      "footerBg": "#45230f",
+      "font": "figtree",
+      "headWeight": "700",
+      "headCase": "normal",
+      "radius": "soft",
+      "buttons": "solid",
+      "surface_style": "outlined",
+      "images": "follow",
+      "density": "balanced",
+      "align": "center",
+      "motion": "none",
+      "mode": "light"
+    }
+  },
+  "pages": [
+    {
+      "id": "page-home",
+      "slug": "home",
+      "title": "Home",
+      "purpose": "Introduce the clinic, instill clinical trust, showcase core treatments, and invite bookings.",
+      "seo": {
+        "title": "Brightline Dental | Trusted Family & Cosmetic Dentistry Manchester",
+        "description": "Award-winning Manchester dental practice providing gentle general, cosmetic, and emergency dentistry."
+      },
+      "sections": [
+        {
+          "id": "sec-hdr-1",
+          "type": "site-header",
+          "version": 1,
+          "visible": true,
+          "props": {
+            "businessName": "Brightline Dental Clinic",
+            "tagline": "Gentle, modern dentistry in Manchester",
+            "navLinks": [
+              { "label": "Home", "slug": "home" },
+              { "label": "About Us", "slug": "about" },
+              { "label": "Services", "slug": "services" },
+              { "label": "Contact", "slug": "contact" }
+            ],
+            "cta": {
+              "label": "Book Appointment",
+              "type": "internal-link",
+              "target": "contact",
+              "style": "primary"
+            },
+            "phone": "+44 161 820 9411"
+          }
+        },
+        {
+          "id": "sec-hero-1",
+          "type": "hero-split",
+          "version": 1,
+          "visible": true,
+          "props": {
+            "eyebrow": "Welcome to Brightline Dental",
+            "title": "Comprehensive Dental Care Crafted with Comfort",
+            "lead": "From gentle checkups to bespoke smile design, our Manchester clinic delivers advanced clinical care in a serene, anxiety-free setting.",
+            "primaryCta": {
+              "label": "Request Consultation",
+              "type": "internal-link",
+              "target": "contact",
+              "style": "primary"
+            },
+            "secondaryCta": {
+              "label": "Explore Treatments",
+              "type": "internal-link",
+              "target": "services",
+              "style": "outline"
+            },
+            "badgeText": "4.9/5 Star Patient Rating",
+            "mediaUrl": "https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=1200&q=80",
+            "mediaAlt": "Modern, tranquil dental consultation room at Brightline Dental",
+            "stats": [
+              { "value": "15+", "label": "Years in Practice" },
+              { "value": "12,000+", "label": "Smiles Restored" },
+              { "value": "99.4%", "label": "Comfort Satisfaction" }
+            ]
+          }
+        },
+        {
+          "id": "sec-svc-1",
+          "type": "service-grid",
+          "version": 1,
+          "visible": true,
+          "props": {
+            "eyebrow": "Our Core Treatments",
+            "heading": "Modern Dentistry Tailored to Your Family",
+            "subheading": "Complete preventive, restorative, and aesthetic dental solutions utilizing digital imaging.",
+            "services": [
+              {
+                "id": "s-1",
+                "title": "Preventative Checkups & Hygiene",
+                "description": "Detailed 3D oral exams, digital cavity screening, and gentle airflow polish cleaning.",
+                "badge": "Routine Care"
+              },
+              {
+                "id": "s-2",
+                "title": "Invisalign Clear Aligners",
+                "description": "Virtually invisible teeth straightening custom-planned with iTero 3D digital scanners.",
+                "badge": "Orthodontics"
+              },
+              {
+                "id": "s-3",
+                "title": "Cosmetic Smile Makeovers",
+                "description": "Porcelain veneers, composite bonding, and in-surgery whitening for radiant confidence.",
+                "badge": "Aesthetics"
+              },
+              {
+                "id": "s-4",
+                "title": "Emergency Dental Relief",
+                "description": "Prompt relief for toothaches, fractured restorations, and urgent infections.",
+                "badge": "Same Day"
+              }
+            ],
+            "columns": "2"
+          }
+        },
+        {
+          "id": "sec-testi-1",
+          "type": "testimonial-list",
+          "version": 1,
+          "visible": true,
+          "props": {
+            "eyebrow": "Patient Experiences",
+            "heading": "Trusted by Manchester Families",
+            "subheading": "Read genuine feedback from patients who overcame dental anxiety with us.",
+            "isDemoData": true,
+            "testimonials": [
+              {
+                "id": "t-1",
+                "quote": "I had avoided the dentist for nearly five years due to anxiety. Dr. Patel and the Brightline team were amazingly gentle. The clinic feels like a calming sanctuary.",
+                "author": "Sarah Jenkins",
+                "roleOrContext": "Manchester Resident (Patient since 2021)",
+                "rating": 5,
+                "verified": true
+              },
+              {
+                "id": "t-2",
+                "quote": "Completed my Invisalign treatment here with outstanding results. Transparent pricing, zero hidden surprises, and modern digital scans throughout.",
+                "author": "Mark Woodhouse",
+                "roleOrContext": "Salford Quays",
+                "rating": 5,
+                "verified": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "sec-cta-1",
+          "type": "call-to-action",
+          "version": 1,
+          "visible": true,
+          "props": {
+            "eyebrow": "Ready for a Healthier Smile?",
+            "title": "Book Your Appointment with Brightline Dental Today",
+            "description": "New patients welcome. Contact our reception team or book directly online.",
+            "primaryCta": {
+              "label": "Schedule Online Now",
+              "type": "internal-link",
+              "target": "contact",
+              "style": "primary"
+            },
+            "secondaryCta": {
+              "label": "Call +44 161 820 9411",
+              "type": "tel",
+              "target": "+441618209411",
+              "style": "outline"
+            },
+            "reassuranceNote": "0% interest financing plans available on treatments over £500."
+          }
+        },
+        {
+          "id": "sec-ftr-1",
+          "type": "site-footer",
+          "version": 1,
+          "visible": true,
+          "props": {
+            "businessName": "Brightline Dental Clinic",
+            "tagline": "Modern, gentle dentistry in the heart of Manchester.",
+            "copyrightYear": 2026,
+            "links": [
+              { "label": "Home", "slug": "home" },
+              { "label": "About Us", "slug": "about" },
+              { "label": "Services", "slug": "services" },
+              { "label": "Contact", "slug": "contact" }
+            ],
+            "phone": "+44 161 820 9411",
+            "email": "reception@brightlinedental.co.uk",
+            "address": "42 St. Peter's Square, Manchester M2 3DF",
+            "demoNotice": "Demo presentation website created with Website Studio 2.0"
+          }
+        }
+      ]
+    },
+    {
+      "id": "page-about",
+      "slug": "about",
+      "title": "About Us",
+      "purpose": "Share the clinic philosophy, clinical technology, and approach to anxiety-free care.",
+      "seo": {
+        "title": "About Brightline Dental | Manchester Dental Practice",
+        "description": "Learn about our patient-first approach, modern digital technology, and caring clinical team."
+      },
+      "sections": [
+        {
+          "id": "sec-hdr-2",
+          "type": "site-header",
+          "version": 1,
+          "visible": true,
+          "props": {
+            "businessName": "Brightline Dental Clinic",
+            "navLinks": [
+              { "label": "Home", "slug": "home" },
+              { "label": "About Us", "slug": "about" },
+              { "label": "Services", "slug": "services" },
+              { "label": "Contact", "slug": "contact" }
+            ],
+            "cta": {
+              "label": "Book Appointment",
+              "type": "internal-link",
+              "target": "contact",
+              "style": "primary"
+            }
+          }
+        },
+        {
+          "id": "sec-hero-centered-about",
+          "type": "hero-centered",
+          "version": 1,
+          "visible": true,
+          "props": {
+            "eyebrow": "Our Philosophy",
+            "title": "Dentistry Designed Around Your Comfort and Peace of Mind",
+            "lead": "We founded Brightline Dental with a simple conviction: clinical excellence should never come at the expense of genuine human empathy.",
+            "primaryCta": {
+              "label": "Meet Our Team",
+              "type": "internal-link",
+              "target": "contact",
+              "style": "primary"
+            },
+            "trustMarkers": [
+              "Care Quality Commission (CQC) Registered",
+              "British Dental Association Members",
+              "Certified Anxiety-Friendly Practice"
+            ],
+            "backgroundVariant": "surface"
+          }
+        },
+        {
+          "id": "sec-feat-1",
+          "type": "feature-row",
+          "version": 1,
+          "visible": true,
+          "props": {
+            "eyebrow": "Patient Experience",
+            "title": "Anxiety-Free, Calming Environment",
+            "description": "From ambient soundscapes and ceiling screens to optional nitrous sedation, every square meter of our Manchester clinic is engineered to replace apprehension with tranquility.",
+            "bullets": [
+              "Comfort-first treatment suites with noise-cancelling headphones",
+              "Needle-free anaesthetic delivery options",
+              "Comprehensive pre-treatment consultations with no rush"
+            ],
+            "mediaUrl": "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=1200&q=80",
+            "mediaAlt": "Welcoming reception and waiting lounge at Brightline Dental",
+            "mediaPosition": "left"
+          }
+        },
+        {
+          "id": "sec-gal-1",
+          "type": "gallery-grid",
+          "version": 1,
+          "visible": true,
+          "props": {
+            "eyebrow": "Our Clinic",
+            "heading": "State-of-the-Art Facilities",
+            "subheading": "Take a virtual look inside our modern Manchester consultation and treatment rooms.",
+            "items": [
+              {
+                "id": "g-1",
+                "title": "Treatment Suite 1",
+                "caption": "Equipped with Belmont ergonomic chairs and ceiling entertainment",
+                "mediaUrl": "https://images.unsplash.com/photo-1629909615184-74f495363b67?auto=format&fit=crop&w=800&q=80",
+                "aspectRatio": "4/3"
+              },
+              {
+                "id": "g-2",
+                "title": "Digital Scanning Bay",
+                "caption": "iTero 3D optical scanner replacing messy dental impressions",
+                "mediaUrl": "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=800&q=80",
+                "aspectRatio": "4/3"
+              }
+            ]
+          }
+        },
+        {
+          "id": "sec-ftr-2",
+          "type": "site-footer",
+          "version": 1,
+          "visible": true,
+          "props": {
+            "businessName": "Brightline Dental Clinic",
+            "copyrightYear": 2026,
+            "links": [
+              { "label": "Home", "slug": "home" },
+              { "label": "About Us", "slug": "about" },
+              { "label": "Services", "slug": "services" },
+              { "label": "Contact", "slug": "contact" }
+            ],
+            "phone": "+44 161 820 9411",
+            "demoNotice": "Demo presentation website created with Website Studio 2.0"
+          }
+        }
+      ]
+    },
+    {
+      "id": "page-services",
+      "slug": "services",
+      "title": "Services",
+      "purpose": "Provide comprehensive details on dental treatments, pricing guides, and frequently asked questions.",
+      "seo": {
+        "title": "Dental Treatments & Services | Brightline Dental Manchester",
+        "description": "Explore general, restorative, and cosmetic dental treatments with clear pricing and modern technology."
+      },
+      "sections": [
+        {
+          "id": "sec-hdr-3",
+          "type": "site-header",
+          "version": 1,
+          "visible": true,
+          "props": {
+            "businessName": "Brightline Dental Clinic",
+            "navLinks": [
+              { "label": "Home", "slug": "home" },
+              { "label": "About Us", "slug": "about" },
+              { "label": "Services", "slug": "services" },
+              { "label": "Contact", "slug": "contact" }
+            ],
+            "cta": {
+              "label": "Book Appointment",
+              "type": "internal-link",
+              "target": "contact",
+              "style": "primary"
+            }
+          }
+        },
+        {
+          "id": "sec-svc-full",
+          "type": "service-grid",
+          "version": 1,
+          "visible": true,
+          "props": {
+            "eyebrow": "Treatments & Procedures",
+            "heading": "Comprehensive Dental Solutions",
+            "subheading": "Clear, upfront pricing with personalized care plans for every stage of life.",
+            "services": [
+              {
+                "id": "sf-1",
+                "title": "Routine Exam & Oral Cancer Screening",
+                "description": "45-minute comprehensive examination including bitewing X-rays, gum health index, and preventive guidance.",
+                "badge": "From £65"
+              },
+              {
+                "id": "sf-2",
+                "title": "Hygiene & Airflow Stain Removal",
+                "description": "Advanced pressurized water and powder treatment that removes tobacco, tea, and coffee stains effortlessly.",
+                "badge": "From £85"
+              },
+              {
+                "id": "sf-3",
+                "title": "Invisalign Clear Aligners",
+                "description": "Gradual, predictable tooth realignment without metal brackets. Includes complimentary teeth whitening.",
+                "badge": "From £1,950"
+              },
+              {
+                "id": "sf-4",
+                "title": "Porcelain Dental Veneers",
+                "description": "Ultra-thin, handmade ceramic veneers designed to correct chips, discoloration, and uneven gaps.",
+                "badge": "From £550 / tooth"
+              },
+              {
+                "id": "sf-5",
+                "title": "Composite Bonding",
+                "description": "Minimally invasive resin sculpting completed in a single appointment without tooth shaving.",
+                "badge": "From £180 / tooth"
+              },
+              {
+                "id": "sf-6",
+                "title": "Emergency Pain Management",
+                "description": "Same-day triage, diagnostic X-rays, and immediate treatment to resolve acute pain.",
+                "badge": "From £95"
+              }
+            ],
+            "columns": "3"
+          }
+        },
+        {
+          "id": "sec-faq-1",
+          "type": "faq-accordion",
+          "version": 1,
+          "visible": true,
+          "props": {
+            "eyebrow": "Common Questions",
+            "heading": "Frequently Asked Questions",
+            "subheading": "Everything you need to know about booking, treatment plans, and financing.",
+            "items": [
+              {
+                "id": "faq-1",
+                "question": "Do you accept new patients?",
+                "answer": "Yes, we are actively welcoming new private and family patients. You can book an initial consultation online or call our Manchester reception."
+              },
+              {
+                "id": "faq-2",
+                "question": "What if I experience intense dental anxiety?",
+                "answer": "Please let us know when booking. We offer longer introductory appointments, gentle step-by-step explanations, and anxiety sedation options."
+              },
+              {
+                "id": "faq-3",
+                "question": "Do you offer payment plans or finance?",
+                "answer": "Yes. We partner with reputable medical credit providers to offer 0% interest monthly payment options over 6, 10, or 12 months for treatments exceeding £500."
+              },
+              {
+                "id": "faq-4",
+                "question": "How quickly can I be seen for a dental emergency?",
+                "answer": "We reserve dedicated emergency slots every weekday morning and afternoon. Call us before 10:00am for priority same-day scheduling."
+              }
+            ]
+          }
+        },
+        {
+          "id": "sec-ftr-3",
+          "type": "site-footer",
+          "version": 1,
+          "visible": true,
+          "props": {
+            "businessName": "Brightline Dental Clinic",
+            "copyrightYear": 2026,
+            "links": [
+              { "label": "Home", "slug": "home" },
+              { "label": "About Us", "slug": "about" },
+              { "label": "Services", "slug": "services" },
+              { "label": "Contact", "slug": "contact" }
+            ],
+            "phone": "+44 161 820 9411",
+            "demoNotice": "Demo presentation website created with Website Studio 2.0"
+          }
+        }
+      ]
+    },
+    {
+      "id": "page-contact",
+      "slug": "contact",
+      "title": "Contact",
+      "purpose": "Provide patients with clear directions, opening hours, emergency contact, and a working demo contact form.",
+      "seo": {
+        "title": "Contact Brightline Dental | Manchester Practice & Appointments",
+        "description": "Find clinic location, opening hours, parking instructions, and contact form for Brightline Dental Manchester."
+      },
+      "sections": [
+        {
+          "id": "sec-hdr-4",
+          "type": "site-header",
+          "version": 1,
+          "visible": true,
+          "props": {
+            "businessName": "Brightline Dental Clinic",
+            "navLinks": [
+              { "label": "Home", "slug": "home" },
+              { "label": "About Us", "slug": "about" },
+              { "label": "Services", "slug": "services" },
+              { "label": "Contact", "slug": "contact" }
+            ],
+            "cta": {
+              "label": "Call Us",
+              "type": "tel",
+              "target": "+441618209411",
+              "style": "primary"
+            }
+          }
+        },
+        {
+          "id": "sec-loc-1",
+          "type": "location-hours",
+          "version": 1,
+          "visible": true,
+          "props": {
+            "eyebrow": "Visit Our Practice",
+            "heading": "Location & Practice Hours",
+            "address": "42 St. Peter's Square, Manchester M2 3DF (Adjacent to St. Peter's Metrolink stop)",
+            "phone": "+44 161 820 9411",
+            "email": "reception@brightlinedental.co.uk",
+            "schedule": [
+              { "days": "Monday - Thursday", "hours": "8:00 AM - 6:30 PM" },
+              { "days": "Friday", "hours": "8:00 AM - 5:00 PM" },
+              { "days": "Saturday", "hours": "9:00 AM - 2:00 PM (By appointment)" },
+              { "days": "Sunday", "hours": "Closed (Emergency on-call only)" }
+            ],
+            "mapPlaceholderText": "Central Manchester Location — St. Peter's Square Metro 2 min walk. Public parking available at Q-Park Piazza."
+          }
+        },
+        {
+          "id": "sec-form-1",
+          "type": "contact-form",
+          "version": 1,
+          "visible": true,
+          "props": {
+            "eyebrow": "Online Enquiry",
+            "heading": "Request a Consultation",
+            "subheading": "Send us your preferred appointment times or enquiries. Our patient coordinator responds within 2 business hours.",
+            "fields": [
+              {
+                "name": "fullName",
+                "label": "Full Name",
+                "type": "text",
+                "required": true,
+                "placeholder": "e.g. Eleanor Vance"
+              },
+              {
+                "name": "email",
+                "label": "Email Address",
+                "type": "email",
+                "required": true,
+                "placeholder": "eleanor@example.com"
+              },
+              {
+                "name": "phone",
+                "label": "Phone Number",
+                "type": "tel",
+                "required": true,
+                "placeholder": "+44 7700 900123"
+              },
+              {
+                "name": "serviceInterest",
+                "label": "Primary Treatment Interest",
+                "type": "select",
+                "required": false,
+                "options": [
+                  "Routine Checkup & Hygiene",
+                  "Invisalign Consultation",
+                  "Cosmetic Bonding / Veneers",
+                  "Emergency Dental Pain",
+                  "General Enquiry"
+                ]
+              },
+              {
+                "name": "message",
+                "label": "Notes or Special Requirements",
+                "type": "textarea",
+                "required": false,
+                "placeholder": "Tell us about any dental anxiety, preferred days, or symptoms..."
+              }
+            ],
+            "submitButtonText": "Submit Enquiry (Demo Mode)",
+            "isDemoMode": true,
+            "successMessage": "Thank you! Your demo enquiry has been submitted. In production, this forwards directly to reception@brightlinedental.co.uk."
+          }
+        },
+        {
+          "id": "sec-ftr-4",
+          "type": "site-footer",
+          "version": 1,
+          "visible": true,
+          "props": {
+            "businessName": "Brightline Dental Clinic",
+            "copyrightYear": 2026,
+            "links": [
+              { "label": "Home", "slug": "home" },
+              { "label": "About Us", "slug": "about" },
+              { "label": "Services", "slug": "services" },
+              { "label": "Contact", "slug": "contact" }
+            ],
+            "phone": "+44 161 820 9411",
+            "demoNotice": "Demo presentation website created with Website Studio 2.0"
+          }
+        }
+      ]
+    }
+  ],
+  "createdAt": "2026-10-20T02:00:00.000Z",
+  "updatedAt": "2026-10-20T02:00:00.000Z",
+  "generation": {
+    "model": "gemini-3",
+    "promptVersion": "v1.0",
+    "estimatedCredits": 185,
+    "actualCredits": 185,
+    "durationMs": 4200,
+    "isMocked": true
+  }
+}

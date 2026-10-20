@@ -1,0 +1,74 @@
+# ==========================================
+# SECURE CREDENTIALS & SENSITIVE SECRETS
+# ==========================================
+# Never commit real API keys, environment variables, or private tokens
+.env
+.env.*
+!.env.example
+*.env
+*.pem
+*.key
+*.cert
+*.crt
+*.pfx
+*.p12
+id_rsa*
+*.secret
+*credentials*
+
+# ==========================================
+# DEPENDENCIES & PACKAGE MANAGERS
+# ==========================================
+node_modules/
+.pnp/
+.pnp.js
+
+# ==========================================
+# NEXT.JS & BUILD ARTIFACTS
+# ==========================================
+.next/
+out/
+build/
+dist/
+*.tsbuildinfo
+
+# ==========================================
+# LOGS & TEMPORARY PROCESS FILES
+# ==========================================
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# ==========================================
+# TEST RUNNERS & COVERAGE
+# ==========================================
+coverage/
+.nyc_output/
+
+# ==========================================
+# LOCAL TEST SCREENSHOTS
+# ==========================================
+live-*.png
+screenshot-*.png
+
+# ==========================================
+# OS & SYSTEM ARTIFACTS
+# ==========================================
+.DS_Store
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# ==========================================
+# IDE & EDITOR SETTINGS
+# ==========================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*.suo
+*.ntvs*
+*.njsproj
+*.sln

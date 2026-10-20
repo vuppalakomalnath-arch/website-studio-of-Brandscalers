@@ -1,0 +1,65 @@
+{
+  "schemaVersion": "1.0",
+  "businessName": "Brightline Dental Clinic",
+  "businessType": "Dental & Oral Healthcare Practice",
+  "primaryGoal": "enquiries",
+  "targetAudience": "Families, working professionals, and pediatric patients in Manchester",
+  "location": "Manchester, UK",
+  "serviceArea": ["Manchester Central", "Salford", "Didsbury", "Altrincham"],
+  "servicesOrProducts": [
+    {
+      "id": "svc-1",
+      "name": "Comprehensive Dental Examinations",
+      "description": "Routine dental checkups, digital X-rays, and comprehensive oral health assessments.",
+      "price": "From £65",
+      "source": "user"
+    },
+    {
+      "id": "svc-2",
+      "name": "Cosmetic Dentistry & Whitening",
+      "description": "Professional teeth whitening, porcelain veneers, and smile makeovers.",
+      "price": "From £250",
+      "source": "user"
+    },
+    {
+      "id": "svc-3",
+      "name": "Invisalign & Clear Aligners",
+      "description": "Discreet orthodontic alignment tailored for teens and adults.",
+      "price": "Consultation Free",
+      "source": "user"
+    },
+    {
+      "id": "svc-4",
+      "name": "Emergency Dental Care",
+      "description": "Same-day emergency appointments for dental pain, fractures, and trauma.",
+      "price": "From £95",
+      "source": "user"
+    }
+  ],
+  "differentiators": [
+    "Over 15 years serving the Manchester community",
+    "Gentle, anxiety-free dentistry with modern comfort sedation",
+    "Cutting-edge 3D scanning and digital impressions",
+    "0% interest patient financing available"
+  ],
+  "preferredDesignDirection": "local-service",
+  "requiredPages": ["home", "about", "services", "contact"],
+  "contactMethod": "form",
+  "contact": {
+    "phone": "+44 161 820 9411",
+    "email": "reception@brightlinedental.co.uk",
+    "whatsapp": "+44 7700 900123",
+    "address": "42 St. Peter's Square, Manchester M2 3DF",
+    "hours": "Mon-Fri: 8:00am - 6:30pm | Sat: 9:00am - 2:00pm"
+  },
+  "assets": [
+    {
+      "id": "asset-logo",
+      "kind": "logo",
+      "source": "demo",
+      "url": "/demo/brightline-logo.svg",
+      "alt": "Brightline Dental Logo"
+    }
+  ],
+  "additionalNotes": "Please emphasize patient comfort and transparent pricing."
+}

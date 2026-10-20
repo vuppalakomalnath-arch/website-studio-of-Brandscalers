@@ -1,0 +1,352 @@
+{
+  "schemaVersion": "1.0",
+  "projectId": "proj-aura-editorial-02",
+  "businessProfileId": "prof-aura-02",
+  "design": {
+    "family": "editorial",
+    "preset": "Quiet luxury",
+    "tokens": {
+      "accent": "#8a5d4e",
+      "ink": "#2b2b2b",
+      "bg": "#ffffff",
+      "surface": "#f6f1ef",
+      "footerBg": "#e8dfdd",
+      "font": "cormorant-jost",
+      "headWeight": "500",
+      "headCase": "normal",
+      "radius": "sharp",
+      "buttons": "outline",
+      "surface_style": "flat",
+      "images": "square",
+      "density": "airy",
+      "align": "left",
+      "motion": "none",
+      "mode": "light"
+    }
+  },
+  "pages": [
+    {
+      "id": "page-home",
+      "slug": "home",
+      "title": "Home",
+      "purpose": "Showcase artisanal luxury homewares and slow fashion collections with editorial minimalism.",
+      "seo": {
+        "title": "Aura Concept Atelier | Editorial Homewares & Design Objects",
+        "description": "Curated artisanal ceramics, linen textiles, and timeless furniture pieces crafted sustainably."
+      },
+      "sections": [
+        {
+          "id": "sec-hdr-e1",
+          "type": "site-header",
+          "version": 1,
+          "visible": true,
+          "props": {
+            "businessName": "Aura Concept Atelier",
+            "tagline": "Curated objects for mindful living",
+            "navLinks": [
+              { "label": "Home", "slug": "home" },
+              { "label": "Story", "slug": "about" },
+              { "label": "Catalogue", "slug": "services" },
+              { "label": "Enquiries", "slug": "contact" }
+            ],
+            "cta": {
+              "label": "View Catalogue",
+              "type": "internal-link",
+              "target": "services",
+              "style": "outline"
+            }
+          }
+        },
+        {
+          "id": "sec-hero-e1",
+          "type": "hero-split",
+          "version": 1,
+          "visible": true,
+          "props": {
+            "eyebrow": "Autumn / Winter Edition",
+            "title": "Living with Intentional Form & Material Warmth",
+            "lead": "We partner with independent ceramicists, woodturners, and weavers across Europe to bring contemplative objects into contemporary living spaces.",
+            "primaryCta": {
+              "label": "Explore New Arrivals",
+              "type": "internal-link",
+              "target": "services",
+              "style": "outline"
+            },
+            "secondaryCta": {
+              "label": "Our Craft Ethos",
+              "type": "internal-link",
+              "target": "about",
+              "style": "ghost"
+            },
+            "badgeText": "Limited Small-Batch Release",
+            "mediaUrl": "https://images.unsplash.com/photo-1616046229478-9901c5536a45?auto=format&fit=crop&w=1200&q=80",
+            "mediaAlt": "Minimalist living interior featuring artisanal ceramic vessels and raw oak table",
+            "stats": [
+              { "value": "100%", "label": "Plastic-Free Packaging" },
+              { "value": "18", "label": "Independent Artisans" }
+            ]
+          }
+        },
+        {
+          "id": "sec-svc-e1",
+          "type": "service-grid",
+          "version": 1,
+          "visible": true,
+          "props": {
+            "eyebrow": "Collections",
+            "heading": "Curated Design Categories",
+            "subheading": "Every piece is numbered and hand-finished using time-honored techniques.",
+            "services": [
+              {
+                "id": "c-1",
+                "title": "Stone & Stoneware Ceramics",
+                "description": "Tactile wheel-thrown dinnerware and sculptural vessels finished with wood-ash glazes.",
+                "badge": "Handmade"
+              },
+              {
+                "id": "c-2",
+                "title": "Organic Belgian Linen",
+                "description": "Stonewashed beddings and drapery woven from certified European flax.",
+                "badge": "Textiles"
+              },
+              {
+                "id": "c-3",
+                "title": "Solid Joinery Furniture",
+                "description": "Fumed oak and English walnut benches, stools, and sideboards built to endure generations.",
+                "badge": "Bespoke"
+              }
+            ],
+            "columns": "3"
+          }
+        },
+        {
+          "id": "sec-ftr-e1",
+          "type": "site-footer",
+          "version": 1,
+          "visible": true,
+          "props": {
+            "businessName": "Aura Concept Atelier",
+            "tagline": "Timeless craftsmanship. Natural materiality.",
+            "copyrightYear": 2026,
+            "links": [
+              { "label": "Home", "slug": "home" },
+              { "label": "Story", "slug": "about" },
+              { "label": "Catalogue", "slug": "services" },
+              { "label": "Enquiries", "slug": "contact" }
+            ],
+            "email": "concierge@auraconcept.com",
+            "demoNotice": "Demo presentation website created with Website Studio 2.0"
+          }
+        }
+      ]
+    },
+    {
+      "id": "page-about",
+      "slug": "about",
+      "title": "Story",
+      "purpose": "Detail the artisan origin stories and commitment to circular sustainability.",
+      "seo": {
+        "title": "Our Story | Aura Concept Atelier",
+        "description": "Discover our philosophy of quiet luxury and ethical craftsmanship."
+      },
+      "sections": [
+        {
+          "id": "sec-hdr-e2",
+          "type": "site-header",
+          "version": 1,
+          "visible": true,
+          "props": {
+            "businessName": "Aura Concept Atelier",
+            "navLinks": [
+              { "label": "Home", "slug": "home" },
+              { "label": "Story", "slug": "about" },
+              { "label": "Catalogue", "slug": "services" },
+              { "label": "Enquiries", "slug": "contact" }
+            ]
+          }
+        },
+        {
+          "id": "sec-feat-e1",
+          "type": "feature-row",
+          "version": 1,
+          "visible": true,
+          "props": {
+            "eyebrow": "Provenance",
+            "title": "Honoring the Rhythm of Natural Materials",
+            "description": "We reject seasonal obsolescence. Our atelier represents makers who understand that beauty deepens with age, patina, and touch.",
+            "bullets": [
+              "Zero synthetic coatings or plastic binders",
+              "Direct trade relationships with family workshops",
+              "Lifetime repair and restoration support"
+            ],
+            "mediaUrl": "https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&w=1200&q=80",
+            "mediaAlt": "Artisan shaping clay on a ceramic potter wheel",
+            "mediaPosition": "right"
+          }
+        },
+        {
+          "id": "sec-ftr-e2",
+          "type": "site-footer",
+          "version": 1,
+          "visible": true,
+          "props": {
+            "businessName": "Aura Concept Atelier",
+            "copyrightYear": 2026,
+            "links": [
+              { "label": "Home", "slug": "home" },
+              { "label": "Story", "slug": "about" },
+              { "label": "Catalogue", "slug": "services" },
+              { "label": "Enquiries", "slug": "contact" }
+            ],
+            "demoNotice": "Demo presentation website created with Website Studio 2.0"
+          }
+        }
+      ]
+    },
+    {
+      "id": "page-services",
+      "slug": "services",
+      "title": "Catalogue",
+      "purpose": "Display edition objects with prices and enquire-to-purchase flows.",
+      "seo": {
+        "title": "Artisanal Catalogue | Aura Concept Atelier",
+        "description": "Browse current small-batch homeware pieces and bespoke interior furnishings."
+      },
+      "sections": [
+        {
+          "id": "sec-hdr-e3",
+          "type": "site-header",
+          "version": 1,
+          "visible": true,
+          "props": {
+            "businessName": "Aura Concept Atelier",
+            "navLinks": [
+              { "label": "Home", "slug": "home" },
+              { "label": "Story", "slug": "about" },
+              { "label": "Catalogue", "slug": "services" },
+              { "label": "Enquiries", "slug": "contact" }
+            ]
+          }
+        },
+        {
+          "id": "sec-gal-e1",
+          "type": "gallery-grid",
+          "version": 1,
+          "visible": true,
+          "props": {
+            "eyebrow": "Selected Editions",
+            "heading": "Recent Studio Additions",
+            "subheading": "Available in strictly limited quantities directly from our workshop.",
+            "items": [
+              {
+                "id": "g-e1",
+                "title": "Komorebi Fluted Vase",
+                "caption": "Hand-carved sandstone stoneware, matte chalk finish — £140",
+                "mediaUrl": "https://images.unsplash.com/photo-1581783342308-f792dbdd27c5?auto=format&fit=crop&w=800&q=80",
+                "aspectRatio": "1/1"
+              },
+              {
+                "id": "g-e2",
+                "title": "Brutalist Oak Low Stool",
+                "caption": "Fumed solid European oak with butterfly key joinery — £420",
+                "mediaUrl": "https://images.unsplash.com/photo-1503602642458-232111445657?auto=format&fit=crop&w=800&q=80",
+                "aspectRatio": "1/1"
+              }
+            ]
+          }
+        },
+        {
+          "id": "sec-ftr-e3",
+          "type": "site-footer",
+          "version": 1,
+          "visible": true,
+          "props": {
+            "businessName": "Aura Concept Atelier",
+            "copyrightYear": 2026,
+            "links": [
+              { "label": "Home", "slug": "home" },
+              { "label": "Story", "slug": "about" },
+              { "label": "Catalogue", "slug": "services" },
+              { "label": "Enquiries", "slug": "contact" }
+            ],
+            "demoNotice": "Demo presentation website created with Website Studio 2.0"
+          }
+        }
+      ]
+    },
+    {
+      "id": "page-contact",
+      "slug": "contact",
+      "title": "Enquiries",
+      "purpose": "Provide trade registration and collector contact form.",
+      "seo": {
+        "title": "Client Concierge & Enquiries | Aura Concept Atelier",
+        "description": "Connect with our curators for bespoke commissions and trade accounts."
+      },
+      "sections": [
+        {
+          "id": "sec-hdr-e4",
+          "type": "site-header",
+          "version": 1,
+          "visible": true,
+          "props": {
+            "businessName": "Aura Concept Atelier",
+            "navLinks": [
+              { "label": "Home", "slug": "home" },
+              { "label": "Story", "slug": "about" },
+              { "label": "Catalogue", "slug": "services" },
+              { "label": "Enquiries", "slug": "contact" }
+            ]
+          }
+        },
+        {
+          "id": "sec-form-e1",
+          "type": "contact-form",
+          "version": 1,
+          "visible": true,
+          "props": {
+            "eyebrow": "Studio Concierge",
+            "heading": "Acquisition & Trade Enquiries",
+            "subheading": "For bespoke architectural commissions or stockist enquiries, please write to our curator.",
+            "fields": [
+              { "name": "name", "label": "Full Name", "type": "text", "required": true, "placeholder": "Julian Wright" },
+              { "name": "email", "label": "Email Address", "type": "email", "required": true, "placeholder": "julian@studio.com" },
+              { "name": "inquiryType", "label": "Enquiry Type", "type": "select", "required": true, "options": ["Private Acquisition", "Architectural Trade Account", "Press & Media"] },
+              { "name": "message", "label": "Project Scope or Items", "type": "textarea", "required": false }
+            ],
+            "submitButtonText": "Send Concierge Request (Demo Mode)",
+            "isDemoMode": true,
+            "successMessage": "Thank you. Your enquiry has been received by our London atelier (Demo Mode)."
+          }
+        },
+        {
+          "id": "sec-ftr-e4",
+          "type": "site-footer",
+          "version": 1,
+          "visible": true,
+          "props": {
+            "businessName": "Aura Concept Atelier",
+            "copyrightYear": 2026,
+            "links": [
+              { "label": "Home", "slug": "home" },
+              { "label": "Story", "slug": "about" },
+              { "label": "Catalogue", "slug": "services" },
+              { "label": "Enquiries", "slug": "contact" }
+            ],
+            "demoNotice": "Demo presentation website created with Website Studio 2.0"
+          }
+        }
+      ]
+    }
+  ],
+  "createdAt": "2026-10-20T02:00:00.000Z",
+  "updatedAt": "2026-10-20T02:00:00.000Z",
+  "generation": {
+    "model": "gemini-3",
+    "promptVersion": "v1.0",
+    "estimatedCredits": 170,
+    "actualCredits": 170,
+    "durationMs": 3900,
+    "isMocked": true
+  }
+}
