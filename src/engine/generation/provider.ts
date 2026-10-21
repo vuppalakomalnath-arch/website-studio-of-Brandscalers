@@ -2,6 +2,7 @@ import { BusinessProfile } from '../schemas/business-profile';
 import { SitePlan } from '../schemas/site-plan';
 import { SectionType } from '../schemas/website-document';
 import { UsageLedger } from './budget';
+import { MinimalIntake, BusinessInference } from '../schemas/inference';
 
 export interface SectionGenerationContext {
   business: BusinessProfile;
@@ -16,6 +17,14 @@ export interface ModelProvider {
   readonly id: string;
   readonly name: string;
   readonly isAvailable: boolean;
+
+  /**
+   * Classify ambiguous business briefs (Stage 3).
+   */
+  classifyAmbiguity?(
+    intake: MinimalIntake,
+    ledger: UsageLedger
+  ): Promise<BusinessInference>;
 
   /**
    * Generate an architectural site plan using gemini-3 or fallback.

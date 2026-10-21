@@ -4,11 +4,20 @@ import { SectionType } from '../schemas/website-document';
 import { ModelProvider, SectionGenerationContext } from './provider';
 import { UsageLedger } from './budget';
 import { getPresetForFamily, DesignFamily } from '../design/presets';
+import { MinimalIntake, BusinessInference } from '../schemas/inference';
+import { inferBusinessProfile } from '../inference/rules';
 
 export class FixtureProvider implements ModelProvider {
   public readonly id = 'fixture-provider';
   public readonly name = 'Deterministic Benchmark Fixture Generator [DEMO MODE]';
   public readonly isAvailable = true;
+
+  public async classifyAmbiguity(
+    intake: MinimalIntake,
+    _ledger: UsageLedger
+  ): Promise<BusinessInference> {
+    return inferBusinessProfile(intake);
+  }
 
   public async generatePlan(
     profile: BusinessProfile,

@@ -4,6 +4,7 @@ export interface TokenUsage {
   promptTokens: number;
   candidatesTokens: number;
   totalTokens: number;
+  estimatedCostUsd?: number;
 }
 
 export interface LedgerEntry {
@@ -13,6 +14,9 @@ export interface LedgerEntry {
   model: string;
   estimatedCredits: number;
   actualCredits: number;
+  estimatedCostUsd: number;
+  latencyMs?: number;
+  correlationId?: string;
   tokenUsage?: TokenUsage;
   status: 'pending' | 'success' | 'failed' | 'rejected_over_budget';
   error?: string;
@@ -75,6 +79,7 @@ export class UsageLedger {
         model,
         estimatedCredits,
         actualCredits: 0,
+        estimatedCostUsd: 0,
         status: 'rejected_over_budget',
         error: `Exceeds budget cap of ${this.hardCap}`,
       });
@@ -89,6 +94,7 @@ export class UsageLedger {
       model,
       estimatedCredits,
       actualCredits: 0,
+      estimatedCostUsd: 0,
       status: 'pending',
     });
     return entryId;
@@ -97,14 +103,23 @@ export class UsageLedger {
   /**
    * Record actual token usage and calibrate credits after successful call.
    */
-  public recordSuccess(entryId: string, tokenUsage: TokenUsage): void {
+  public recordSuccess(entryId: string, tokenUsage: TokenUsage, latencyMs?: number, correlationId?: string): void {
     const entry = this.entries.find((e) => e.id === entryId);
     if (!entry) return;
 
     // Credit formula: 1 credit per ~75 tokens + base transaction cost
     const calculatedCredits = Math.max(1, Math.round(tokenUsage.totalTokens / 75));
+    // Official Gemini 3.5 Flash Lite pricing: $0.075 / 1M prompt, $0.30 / 1M candidate
+    const promptCost = (tokenUsage.promptTokens / 1_000_000) * 0.075;
+    const candidateCost = (tokenUsage.candidatesTokens / 1_000_000) * 0.30;
+    const costUsd = Number((promptCost + candidateCost).toFixed(6));
+
     entry.actualCredits = calculatedCredits;
+    entry.estimatedCostUsd = costUsd;
+    tokenUsage.estimatedCostUsd = costUsd;
     entry.tokenUsage = tokenUsage;
+    entry.latencyMs = latencyMs;
+    entry.correlationId = correlationId;
     entry.status = 'success';
   }
 
@@ -116,8 +131,19 @@ export class UsageLedger {
     if (!entry) return;
 
     entry.actualCredits = 0;
+    entry.estimatedCostUsd = 0;
     entry.status = 'failed';
     entry.error = error;
+  }
+
+  /**
+   * Returns total estimated provider USD cost across successful calls.
+   */
+  public getTotalEstimatedUsdCost(): number {
+    const total = this.entries
+      .filter((e) => e.status === 'success')
+      .reduce((acc, curr) => acc + curr.estimatedCostUsd, 0);
+    return Number(total.toFixed(6));
   }
 
   /**

@@ -4,6 +4,8 @@ import { SitePlan, SitePlanSchema } from '../schemas/site-plan';
 import { SectionType } from '../schemas/website-document';
 import { ModelProvider, SectionGenerationContext } from './provider';
 import { UsageLedger } from './budget';
+import { MinimalIntake, BusinessInference, BusinessInferenceSchema } from '../schemas/inference';
+import { inferBusinessProfile } from '../inference/rules';
 
 export class GeminiProvider implements ModelProvider {
   public readonly id = 'google-gemini';
@@ -34,6 +36,86 @@ export class GeminiProvider implements ModelProvider {
       clean = clean.slice(0, -3);
     }
     return clean.trim();
+  }
+
+  public async classifyAmbiguity(
+    intake: MinimalIntake,
+    ledger: UsageLedger
+  ): Promise<BusinessInference> {
+    if (!this.ai) {
+      return inferBusinessProfile(intake);
+    }
+
+    const estimatedCredits = 10;
+    const entryId = ledger.reserve('inference_ambiguity_fallback', this.planningModels[0], estimatedCredits);
+    const startTime = Date.now();
+
+    const prompt = `
+You are the Business Taxonomy Classifier for Website Studio 2.0.
+Given this ambiguous business brief, classify its primary archetype and structure.
+
+INPUT:
+Business Name: ${intake.businessName}
+Category: ${intake.category}
+Offer: ${intake.offerDescription}
+
+ALLOWED ARCHETYPES:
+["ecommerce", "catalogue", "local-service", "agency", "portfolio", "restaurant", "healthcare", "education", "event-venue", "hospitality", "nonprofit", "personal-brand", "lead-gen", "mixed-other"]
+
+CRITICAL RULES:
+1. Non-retail businesses (clinic, consultant, restaurant, portfolio) must NOT be classified as ecommerce unless they explicitly sell physical products online with cart/checkout.
+2. Return strictly valid JSON adhering to:
+{
+  "schemaVersion": "2.0",
+  "primaryArchetype": string,
+  "confidence": "high" | "medium" | "low",
+  "likelyGoal": "enquiries" | "calls" | "whatsapp" | "bookings_external" | "portfolio" | "brand" | "catalogue",
+  "customerJourney": string,
+  "candidatePages": ["home", "about", "services", "contact"],
+  "requiredCapabilities": string[],
+  "missingHighImpactInfo": string[],
+  "contradictions": string[],
+  "recommendedQuestionIds": string[],
+  "source": "ai_fallback",
+  "rulesVersion": "v2.0-ai-fallback"
+}
+`;
+
+    for (const modelName of this.planningModels) {
+      try {
+        const response = await this.ai.models.generateContent({
+          model: modelName,
+          contents: prompt,
+          config: {
+            responseMimeType: 'application/json',
+            temperature: 0.1,
+          },
+        });
+
+        const rawText = response.text || '';
+        const cleaned = this.cleanJson(rawText);
+        const parsed = JSON.parse(cleaned);
+        const validated = BusinessInferenceSchema.parse(parsed);
+
+        const usage = response.usageMetadata;
+        ledger.recordSuccess(
+          entryId,
+          {
+            promptTokens: usage?.promptTokenCount || 400,
+            candidatesTokens: usage?.candidatesTokenCount || 250,
+            totalTokens: usage?.totalTokenCount || 650,
+          },
+          Date.now() - startTime
+        );
+
+        return validated;
+      } catch (err: any) {
+        // continue to next model
+      }
+    }
+
+    ledger.recordFailure(entryId, 'Gemini ambiguity classification failed; falling back to rules');
+    return inferBusinessProfile(intake);
   }
 
   public async generatePlan(

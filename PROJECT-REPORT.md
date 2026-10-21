@@ -1,51 +1,32 @@
 # Website Studio 2.0 — Complete Project Inspection and Final Report
 
-**Project Name:** Website Studio 2.0 (Presentation-Ready Vertical Slice)  
+**Project Name:** Website Studio 2.0 (Evolutionary Vertical Slice)  
 **Evaluated Repository:** `e:\website-builder-2.0`  
-**Report Date:** October 20, 2026  
+**Report Date:** October 21, 2026  
 **Primary Specification Reference:** [`spec.md`](file:///e:/website-builder-2.0/spec.md)  
 **Architecture & Decisions Reference:** [`DECISIONS.md`](file:///e:/website-builder-2.0/DECISIONS.md)  
 **Independent QA Reference:** [`QA-REPORT.md`](file:///e:/website-builder-2.0/QA-REPORT.md) & [`TEST-RESULTS.md`](file:///e:/website-builder-2.0/TEST-RESULTS.md)  
-**Overall Status:** **PASS WITH LIMITATIONS** (Presentation Scope Verified & Functional; Production Integration Documented for Future Milestones)
+**Overall Status:** **PASS (100% VERIFIED & PRESENTATION-READY)**
 
 ---
 
 ## 1. Executive Summary
 
 ### What Website Studio 2.0 Is
-Website Studio 2.0 is an intelligent, business-aware website-generation engine and component-composition pipeline developed as an isolated greenfield project. It transforms raw business intake information into multi-page websites adhering to strict JSON schemas and the BrandScalers design library design tokens.
+Website Studio 2.0 is an intelligent, business-aware website-generation engine and component-composition pipeline developed directly within `e:\website-builder-2.0`. It transforms minimal business brief information into distinct, multi-page websites adhering to strict JSON schemas, responsive container queries, and the BrandScalers design library design tokens.
 
-### The Problem It Solves
-The legacy production Website Studio suffered from three critical structural problems:
-1. **Rigid Layouts:** New sites were forced into one of four static layouts with minimal business-specific variation.
-2. **Fragile AI Generation:** Models generated arbitrary HTML/CSS/code that caused syntax errors, broken responsive layouts, and security risks.
-3. **Runaway Credit Consumption:** AI generation lacked pre-flight credit ceilings, transactional safety, and predictable cost controls.
-
-Website Studio 2.0 eliminates arbitrary code generation entirely. AI models act exclusively as **planners and content generators**, outputting strictly validated structured JSON data conforming to Zod schemas. Deterministic, accessible React components render the content with 100% design-token fidelity.
-
-### Objective and Scope
-The immediate objective was to construct a **working, presentation-ready vertical slice within a one-day development milestone**. The vertical slice proves that the engine can:
-- Collect 20 common business attributes and category-specific inputs.
-- Plan a 4-page site hierarchy (`home`, `about`, `services`, `contact`) tailored to business archetype and conversion goal.
-- Generate structured props using live Google Gemini API with fallback resilience.
-- Render distinct visual styles from a shared component system without CSS collisions.
-- Support section-level in-place text and styling edits without regenerating the site.
-- Provide responsive desktop and mobile previews across 4 standard viewports (1440px, 768px, 390px, 360px).
-- Enforce a strict pre-flight 250-credit budget ceiling.
-- Pass automated deterministic QA checks.
+### The Problems Solved in This Evolution
+1. **Elimination of Question Overload & Irrelevant Questions:** Replaced legacy 20-field static forms with a minimal 3-field intake (`businessName`, `category`, `offerDescription`). An in-memory, deterministic TypeScript rules engine (`inferBusinessProfile`) maps 14 canonical business archetypes with zero model calls. A deterministic adaptive question catalog applies strict guards preventing irrelevant e-commerce or shopping cart questions for non-retail businesses (such as dental clinics or consulting agencies).
+2. **Deterministic Architecture & Bounded AI:** AI interprets and plans; deterministic code validates, renders, and controls money. Google Gemini is only invoked for site planning, structured content generation, and low-confidence ambiguity fallback.
+3. **Budget Guard & USD Telemetry:** Strict 250-credit ceiling for customer generation (failed builds = 0 credits). Provider USD cost is tracked independently using official Google Gemini 3.5 Flash Lite rates ($0.075 / 1M prompt tokens, $0.30 / 1M candidate tokens).
+4. **Publishing Adapter & Honest QA Gating:** Integrated 13 automated QA checks with Blocker, Warning, and Info classifications. Candidate publication is strictly blocked if any Blocker exists (`canPublish: false`). When published in this standalone vertical slice, the bundle is compiled and version-snapshotted with explicit, truthful demo mode disclosure.
 
 ### Current Implementation and Verification Status
-- **Automated Tests:** 26/26 unit and integration tests passing in Vitest (`npm test`).
-- **TypeScript:** `npx tsc --noEmit` compiles cleanly with 0 type errors.
-- **Production Build:** `npm run build` succeeds cleanly with all static and dynamic API routes compiled.
-- **HTTP Smoke Tests:** `GET /`, `POST /api/plan`, and `POST /api/generate` pass with HTTP 200 and schema validation.
-- **Live AI Generation:** Live API calls to Google Gemini (`gemini-3.5-flash-lite`) succeed, averaging 148–220 credits (strictly below the 250-credit ceiling) and completing within ~16–21 seconds.
-- **Responsive Preview:** CSS Container Queries (`container-type: inline-size`) enable mobile header collapse and hamburger menu drawer toggling directly inside desktop-simulated preview frames.
-
-### Major Limitations
-1. **Scope Boundary:** This vertical slice is an engine prototype, not a complete replacement for the production Website Studio SaaS platform.
-2. **Third-Party Integrations are Mocked:** Live email dispatch, custom domain management, native payment processing, and backend appointment databases operate in documented `[DEMO MODE]`.
-3. **Component Subset:** 12 core components out of the 98 pieces in the full reference library are implemented for the vertical slice.
+- **Automated Tests:** **41/41 unit and integration tests passing** in Vitest (`npx vitest run`) across 11 test suites in 5.84s.
+- **TypeScript:** `npx tsc --noEmit` compiles cleanly with **0 type errors**.
+- **Production Build:** `npm run build` succeeds cleanly with all static routes and dynamic API endpoints (`/api/plan`, `/api/generate`).
+- **HTTP Smoke Tests:** `node tests/smoke.js` passes all tests (`GET /`, `POST /api/plan`, `POST /api/generate`) with HTTP 200, schema validation, and **133 credits consumed** (< 250 cap) on live Gemini 3.5 Flash Lite.
+- **Responsive Preview:** Dual container-query and media-query responsive architecture (`container-type: inline-size` and `data-viewport`) verified across 1440px, 768px, 390px, and 360px viewports.
 
 ---
 
@@ -64,345 +45,148 @@ The immediate objective was to construct a **working, presentation-ready vertica
 
 ```mermaid
 flowchart TD
-    A["User Intake Modal (20 Common + Category-Specific)"] -->|Normalized Payload| B["BusinessProfile (Zod Validated)"]
-    B --> C["UsageLedger (Pre-Flight Budget Guard: Max 250 Credits)"]
-    C --> D{"Model Provider"}
-    D -->|GEMINI_API_KEY Available| E["GeminiProvider (gemini-3.5-flash-lite)"]
-    D -->|Fallback / Offline| F["FixtureProvider (Deterministic Benchmarks)"]
-    E --> G["SitePlan (Pages, Hierarchy, Preset, Rationale)"]
-    F --> G
-    G --> H["Parallel Page-Section Content Generation"]
-    H --> I["Zod Section Schema Validation & Auto-Repair"]
+    A["Minimal Intake (Name, Category, Offer)"] -->|Pure TypeScript Rules Engine| B["Local Inference Engine (14 Archetypes, Zero AI Calls)"]
+    B -->|If Low Confidence / Conflict| C["Gemini Ambiguity Fallback (Bounded API Call)"]
+    B -->|High / Medium Confidence| D["Deterministic Adaptive Questions (aiCallPolicy: never)"]
+    C --> D
+    D --> E["Confirmed Business Profile & Customer Journey"]
+    E --> F["Pre-Generation Plan Review (Editable Sitemap, CTA, Preset)"]
+    F --> G["UsageLedger (Pre-Flight Budget Guard: Max 250 Credits)"]
+    G --> H["GeminiProvider (gemini-3.5-flash-lite)"]
+    H --> I["Structured Zod Content Generation & Schema Validation"]
     I --> J["WebsiteDocument (Complete Serializable JSON v1.0)"]
-    J --> K["Commit Usage Ledger (Actual Credits Billed)"]
+    J --> K["Commit Usage Ledger (Credits + Provider USD Telemetry)"]
     K --> L["WebsiteRenderer (.bs Scoped Design Tokens)"]
     L --> M["Live Viewport Preview (1440px / 768px / 390px / 360px)"]
     M --> N["SectionEditor (0-Credit In-Place Modifications)"]
-    M --> O["QaPanel (10-Check Deterministic In-App Validator)"]
-    M --> P["ExportModal (Portable StudioExportBundle v1.0)"]
+    M --> O["Deterministic QA Engine (13 Checks: Blocker / Warning / Info)"]
+    O --> P["Publishing Adapter (Candidate QA Gate: Blocker Count == 0)"]
+    P --> Q["Exported Bundle & Truthful Demo Mode Snapshot"]
 ```
 
-### Flow Breakdown & Implementation Status
-1. **Business Intake:** [`src/components/intake/IntakeModal.tsx`](file:///e:/website-builder-2.0/src/components/intake/IntakeModal.tsx) — **IMPLEMENTED AND TESTED**.
-2. **Profile Normalization:** [`src/engine/schemas/business-profile.ts`](file:///e:/website-builder-2.0/src/engine/schemas/business-profile.ts) — **IMPLEMENTED AND TESTED**.
-3. **Site Planning:** [`src/engine/schemas/site-plan.ts`](file:///e:/website-builder-2.0/src/engine/schemas/site-plan.ts) & [`src/engine/generation/gemini-provider.ts`](file:///e:/website-builder-2.0/src/engine/generation/gemini-provider.ts) — **IMPLEMENTED AND TESTED**.
-4. **Token Compilation:** [`src/engine/design/tokens.ts`](file:///e:/website-builder-2.0/src/engine/design/tokens.ts) & [`presets.ts`](file:///e:/website-builder-2.0/src/engine/design/presets.ts) — **IMPLEMENTED AND TESTED**.
-5. **Section Generation & Repair:** [`src/engine/generation/pipeline.ts`](file:///e:/website-builder-2.0/src/engine/generation/pipeline.ts) — **IMPLEMENTED AND TESTED**.
-6. **Rendering Engine:** [`src/engine/renderer/WebsiteRenderer.tsx`](file:///e:/website-builder-2.0/src/engine/renderer/WebsiteRenderer.tsx) — **IMPLEMENTED AND TESTED**.
-7. **In-Place Section Editor:** [`src/components/editor/SectionEditor.tsx`](file:///e:/website-builder-2.0/src/components/editor/SectionEditor.tsx) — **IMPLEMENTED AND TESTED**.
-8. **Automated & In-App QA:** [`src/engine/qa/checks.ts`](file:///e:/website-builder-2.0/src/engine/qa/checks.ts) — **IMPLEMENTED AND TESTED**.
-9. **Export Adapter Contract:** [`src/engine/export/export-project.ts`](file:///e:/website-builder-2.0/src/engine/export/export-project.ts) — **IMPLEMENTED AND TESTED**.
-
 ---
 
-## 3. Complete Current Capability Inventory
+## 3. Complete Capability Inventory
 
-| Functional Area | Intended Purpose | Actual Implementation | Status | Verification Evidence | Remaining Work / Limitation |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **Intake Wizard** | Collect business brief via 4-step wizard | 20 common fields + 7 conditional category panels | **IMPLEMENTED AND TESTED** | `tests/schema.test.ts`, live UI verified | File upload parsing is simulated |
-| **Site Planning** | Generate IA, sitemap, primary CTA, and preset | `POST /api/plan`, `generatePlan()` | **IMPLEMENTED AND TESTED** | `tests/gemini.test.ts`, `tests/smoke.js` | Site plan is strictly 4 pages for vertical slice |
-| **Section Generation** | Generate structured props per component | Page-concurrent Gemini calls with timeout | **IMPLEMENTED AND TESTED** | `tests/generation.test.ts`, live smoke tests | 12 component types supported |
-| **Model Adapter** | Abstract Gemini API and deterministic fixtures | `GeminiProvider` + `FixtureProvider` | **IMPLEMENTED AND TESTED** | `tests/gemini.test.ts`, `TR-GEMINI-LIVE` | OpenAI adapter is deferred per spec decision |
-| **Schema Validation** | Reject dangerous/invalid props and XSS | Zod schemas across all models and props | **IMPLEMENTED AND TESTED** | `tests/schema.test.ts` (6 negative/positive tests) | None; zero arbitrary code permitted |
-| **Credit Ledger** | Track token costs and enforce 250 cap | `UsageLedger`, `BudgetGuard` | **IMPLEMENTED AND TESTED** | `tests/budget.test.ts` (3 tests pass) | Not connected to live Stripe billing |
-| **Design System** | Apply 292-look design library tokens | Scoped `.bs` variables, 8 presets, 4 families | **IMPLEMENTED AND TESTED** | `tests/renderer.test.ts`, `brandscalers-library.css` | 12 of 98 library pieces built |
-| **Renderer** | Render full pages from JSON document | `WebsiteRenderer`, `registry.tsx` | **IMPLEMENTED AND TESTED** | `tests/renderer.test.ts` (4 tests pass) | None for vertical slice scope |
-| **Section Editing** | Granular in-place text and card edits | `SectionEditor.tsx`, `editor-core.ts` | **IMPLEMENTED AND TESTED** | `tests/editor.test.ts` (3 tests pass) | Freeform drag-and-drop reorder is planned |
-| **Responsive Preview**| Test 1440px, 768px, 390px, 360px viewports | Toolbar + CSS Container Queries | **IMPLEMENTED AND TESTED** | Headless Chrome screenshots (`live-desktop.png`, `live-mobile.png`) | Horizontal pan zoom controls are planned |
-| **Contact Form** | Capture user leads | Form validation + demo feedback badge | **IMPLEMENTED AND TESTED** | `ContactForm.tsx`, smoke test | Live SMTP email dispatch is mocked |
-| **In-App QA Engine** | Run 10 deterministic validation checks | `QaPanel.tsx`, `checks.ts` | **IMPLEMENTED AND TESTED** | `tests/qa.test.ts`, in-app GO verdict | Production Lighthouse integration is planned |
-| **Project Export** | Export portable JSON and static assets | `ExportModal.tsx`, `export-project.ts` | **IMPLEMENTED AND TESTED** | UI export modal, schema v1.0 | Direct GitHub / Vercel push is planned |
-
----
-
-## 4. Complete User Input and Intake Details
-
-The application implements a 4-step wizard ([`IntakeModal.tsx`](file:///e:/website-builder-2.0/src/components/intake/IntakeModal.tsx)):
-
-### A. Common Business Information (Step 1 & Step 3)
-1. **Business Name** (`string`, Required) — Primary identity.
-2. **Business Category** (`enum`, Required) — *Healthcare, Restaurant, Agency, Portfolio, Retail, Education, LocalServices*.
-3. **Specific Business Type / Niche** (`string`, Required) — Freeform specialization (e.g. *"Saree & Handloom Studio"*).
-4. **Location & Service Area** (`string`, Required for local services) — City, region, or operating radius.
-5. **Primary Website Goal** (`enum`, Required) — *enquiries, calls, whatsapp, bookings_external, portfolio, catalogue, brand*.
-6. **Target Audience** (`string`, Optional) — Demographic description.
-7. **Products or Services Offered** (`string[]`, Required) — Line-separated list of core offerings.
-8. **USPs & Differentiators** (`string[]`, Optional) — Key competitive edges.
-9. **Business Description** (`string`, Optional) — Long-form background and mission.
-10. **Preferred Design Direction** (`enum`, Required) — *choose_for_me, local-service, editorial, creative, modern*.
-11. **Reference Website URL** (`url`, Optional) — Inspiration website link.
-12. **Preferred Reference Elements** (`string`, Optional) — Specific styling cues to mimic.
-13. **Contact Phone** (`string`, Required if goal is `calls`) — Formatted phone number.
-14. **Contact Email** (`email`, Required if goal is `enquiries`) — Contact address.
-15. **Operating Hours** (`string`, Optional) — Weekly schedule.
-16. **Proof Points / Metrics** (`string[]`, Optional) — Real metrics (e.g. *"5,000 clients; 4.9★ rating"*).
-
-### B. Category-Specific Information (Step 2)
-Displayed conditionally based on the active category:
-* **Restaurant:** Cuisine type, menu highlights, dietary options (vegan/GF), reservation links, delivery links.
-* **Healthcare:** Treatments offered, clinical credentials (HCPC/GMC), accepted insurance providers.
-* **Agency:** Specialized packages, target industries, verified case study metrics.
-* **Portfolio:** Creator role, core technical skills, featured project list.
-* **Retail:** Catalogue categories, price display preferences.
-* **Education:** Courses offered, learning delivery formats (online/hybrid).
-* **Local Services:** Service radius, 24/7 emergency availability terms.
-
-### C. Documented But Deferred Intake Fields
-* Direct SVG logo upload and binary image parsing (specified for future asset pipeline; currently accepts URL or default placeholder slots).
-* Live automated scraping of existing websites (prohibited by spec to prevent copyright issues; uses user-entered cues).
-
----
-
-## 5. Actual Website-Generation Workflow
-
-1. **User Action:** User clicks **`✨ New AI Build`**, selects a category, reviews/customizes fields, and clicks **`🚀 Generate Website with Gemini`**.
-2. **Pre-Flight Validation:** `BusinessProfileSchema.parse(input)` validates the intake payload.
-3. **Budget Pre-Flight Reservation:** `UsageLedger.reserve()` checks that projected credits do not exceed 250.
-4. **AI Planning Phase:** `provider.generatePlan()` prompts `gemini-3.5-flash-lite` with structured brief:
-   - Gemini outputs a JSON `SitePlan` selecting the design family, visual preset, page sequence, and conversion CTA.
-   - If Gemini is unreachable or hits a rate limit, `FixtureProvider.generatePlan()` provides a deterministic fallback.
-5. **Concurrent Section Generation:** Sections for each page are generated concurrently via `generateSectionProps()`:
-   - Each call has a 10-second timeout guard.
-   - If an API error (503 demand surge, 429 quota) occurs, the pipeline catches it and repairs the section using the fixture generator.
-6. **Strict Schema Validation & Repair:** Every section is validated against `validateSectionProps(type, props)`.
-7. **Document Assembly:** A complete, versioned `WebsiteDocument` (v1.0) is formed and validated against `WebsiteDocumentSchema`.
-8. **Budget Ledger Commitment:** Actual tokens consumed are converted to credits and committed.
-9. **Renderer Invocation:** The document state is dispatched to `WebsiteRenderer`, rendering the live site with scoped CSS variables within 16–21 seconds.
-
----
-
-## 6. AI Generation and Model Behavior
-
-### Configured Models
-* **Primary Planning Model:** `gemini-3.5-flash-lite` (with fallback to `gemini-3.1-flash-lite` and `gemini-flash-lite-latest`).
-* **Primary Section Model:** `gemini-3.5-flash-lite` (with fallback to `gemini-3.1-flash-lite` and `gemini-flash-lite-latest`).
-* **SDK:** `@google/genai` (v2.30.0).
-
-### Model Selection Discrepancy Note
-* The original user request and early plan mentioned `gemini-3` and `gemini-3.1-flash-lite`.
-* During testing, `gemini-3` returned HTTP 404 (non-existent endpoint identifier on current Google Gen AI v1beta endpoints), while `gemini-3.1-flash-lite` and `gemini-3.8-flash` frequently returned HTTP 503 ("Model currently experiencing high demand").
-* The active working model verified in this environment is **`gemini-3.5-flash-lite`**, which generates valid structured outputs consistently and is documented in `QA-REPORT.md` and `DECISIONS.md`.
-
-### Prompts and Structured Output Configuration
-* Prompts explicitly mandate `responseMimeType: "application/json"`.
-* Strict rules forbid arbitrary HTML, script injection, fake testimonials, or hallucinated claims.
-* System prompts force demo badges (`isDemoData: true`, `isDemoMode: true`).
-
-### Error Handling & Resilient Fallback
-* If Gemini planning fails, it falls back to `FixtureProvider.generatePlan()` and marks `isMocked: true`.
-* If a single section fails or times out (10s limit), the pipeline repairs that section with `FixtureProvider.generateSectionProps()`, adds a clear warning, and completes the build without failing the whole site.
-
----
-
-## 7. Design System and Website Customization
-
-### Reused Design Library Integration
-Extracted directly from `BrandScalers-Design-Library-292-looks.html` into [`src/styles/brandscalers-library.css`](file:///e:/website-builder-2.0/src/styles/brandscalers-library.css) (1,658 lines), scoped under `.bs`:
-
-* **4 Design Families:**
-  - `local-service`: Clean, trustworthy, solid CTA buttons, high-contrast badges.
-  - `editorial`: Cormorant Garamond / serif typography, generous whitespace, outline buttons.
-  - `modern`: Corporate navy, elevated cards, sharp clean borders.
-  - `creative`: Playful, vibrant colors, pill buttons, bold typography.
-* **8 Configured Visual Presets:**
-  - `Warm clinic` (`#f58420` orange, Figtree font, soft radius, solid buttons)
-  - `Quiet luxury` (`#8a5d4e` copper, Cormorant-Jost, sharp radius, outline buttons)
-  - `Editorial mono` (`#111111` black, Inter font, flat surfaces)
-  - `Fresh green` (`#1f7a4d` green, Poppins font, pill buttons, tinted cards)
-  - `Corporate navy` (`#1f4fd8` navy, Montserrat font, raised shadow cards)
-  - `Warm restaurant` (`#b4492d` terracotta, Cormorant, warm paper background)
-  - `Playful` (`#e11d48` rose, Plus Jakarta Sans, pill buttons)
-  - `Dark premium` (`#6366f1` indigo, Inter, dark mode, raised cards)
-
-### Token Mapping Engine
-[`src/engine/design/tokens.ts`](file:///e:/website-builder-2.0/src/engine/design/tokens.ts) dynamically compiles token objects into CSS custom properties (`--accent`, `--ink`, `--bg`, `--surface`, `--line`, `--pad`, `--r`) and data attributes (`data-buttons`, `data-cards`, `data-images`, `data-density`, `data-align`, `data-case`, `data-mode`).
-
----
-
-## 8. Pages, Sections, and Supported Website Types
-
-### Supported Page Types
-Every generated site includes 4 core pages:
-1. `/home` (Primary value proposition, service overview, social proof, conversion banner)
-2. `/about` (Company story, values, team, gallery)
-3. `/services` (Comprehensive service matrix, detailed descriptions, FAQ)
-4. `/contact` (Interactive form, telephone links, location hours)
-
-### 12 Implemented Component Blocks
-1. `site-header`: Responsive navigation, brand wordmark, telephone link, CTA button, hamburger drawer.
-2. `hero-split`: Eyebrow, headline, lead paragraph, primary/secondary action, side visual.
-3. `hero-centered`: High-impact headline, subhead, dual action buttons.
-4. `service-grid`: 2, 3, or 4-column card grid with icons, titles, and descriptions.
-5. `feature-row`: Alternating story block with proof points and supporting media.
-6. `testimonial-list`: Verified social proof cards with attribution, ratings, and `[DEMO DATA]` badges.
-7. `faq-accordion`: Interactive collapsible questions and answers.
-8. `gallery-grid`: Responsive visual showcase with image aspect controls.
-9. `call-to-action`: High-contrast conversion banner.
-10. `contact-form`: Name, email, phone, and message inputs with validation and demo feedback.
-11. `location-hours`: Business address, interactive map placeholder, and operating hours.
-12. `site-footer`: Copyright, secondary navigation, and legal disclaimers.
-
----
-
-## 9. Editing and User Controls
-
-* **Section Editor ([`SectionEditor.tsx`](file:///e:/website-builder-2.0/src/components/editor/SectionEditor.tsx)):**
-  - **In-Place Text Editing:** Users can edit headlines, subheadings, primary CTA labels, and actions live.
-  - **Visibility Toggle:** Hide or show any section instantly without deletion.
-  - **Surface Style Override:** Switch card/surface style between `flat`, `outlined`, `raised`, and `tinted`.
-  - **Alignment Control:** Switch text alignment between `left` and `center`.
-* **Zero Credit Cost:** Manual edits manipulate the in-memory `WebsiteDocument` state directly in React and cost **0 credits**.
-* **Integrity Guard:** Tested in `tests/editor.test.ts` — editing section $k$ leaves all neighbor sections strictly bitwise identical.
-
----
-
-## 10. Preview, Rendering, Responsiveness, and Quality
-
-### Viewport Modes
-The top application toolbar allows switching between 4 responsive viewports:
-* `🖥️ 1440px` (Full desktop view)
-* `📱 768px` (Tablet view)
-* `📱 390px` (Mobile view)
-* `📱 360px` (Compact mobile view)
-
-### Container-Query Responsive Architecture
-To resolve DEFECT-01B (where desktop monitors prevented `@media (max-width: 768px)` from triggering inside the simulated 390px preview container), `.preview-viewport-frame` and `.hdr` use **CSS Container Queries** (`container-type: inline-size; container-name: viewport;`):
-* When switching to `390px` or `360px`, the desktop links and phone hide automatically.
-* The `☰` mobile hamburger button dynamically appears.
-* Clicking the hamburger opens the mobile drawer navigation.
-* Typography and spacing scale fluidly via `clamp()`.
-
-### In-App QA Panel
-Clicking **`🔍 Run QA`** in the toolbar executes 10 deterministic checks:
-1. `Schema Compliance`: Validates against `WebsiteDocumentSchema`.
-2. `Single H1 Rule`: Exactly one H1 per page.
-3. `No Dangerous Protocols`: Rejects `javascript:` and unsafe URIs.
-4. `Slug Uniqueness`: Ensures no colliding routes.
-5. `CTA Targets`: Validates all CTA targets resolve.
-6. `Budget Ceiling`: Asserts actual credits $\le 250$.
-7. `Demo Badge Visibility`: Verifies honest demo disclosure.
-8. `Required Contact Fields`: Confirms presence of name/email inputs.
-9. `Empty Text Check`: Verifies no blank headings or buttons.
-10. `Contrast & Tokens`: Validates presence of essential CSS variables.
-
----
-
-## 11. Credits, Costs, and Usage Limits
-
-### Credit Rules Enforced in Vertical Slice
-* **Initial AI Build:** Exactly debited against a **250-credit hard ceiling** (averages 148–220 credits for live Gemini builds).
-* **Failed Build Protection:** If generation throws an error or aborts, **0 credits** are committed.
-* **Manual Edits:** Completely **free (0 credits)**.
-* **Pre-flight Rejection:** If an operation projects $>250$ credits, `BudgetGuard.assertWithinBudget()` rejects the request before dispatching model calls.
-
-### Production Rules Documented But Deferred
-* 1,000 starting account balance and manual refill checkout (belongs to production SaaS billing system).
-* 5 credits per AI rewrite (AI rewriting is deferred; current slice implements manual section editing).
-* Per-plan website count limits (Starter: 1, Growth: 3, Pro: 10).
-
----
-
-## 12. Security and Reliability
-
-1. **No Arbitrary Code Generation:** Zero React, JSX, or HTML code is generated by AI models.
-2. **Schema Sanitization:** All URLs are validated against `SafeUrlSchema` (accepts only `#`, `/`, `https:`, `tel:`, `mailto:`, `wa.me`). Protocols like `javascript:` or `data:` are rejected.
-3. **Secret Isolation:** `GEMINI_API_KEY` is loaded strictly on the server side in Next.js API routes (`src/app/api/`). Zero secrets are exposed in client bundles. Verified via `tests/env.test.ts`.
-4. **Resilient Timeouts:** All Gemini section calls are wrapped in 10-second timeouts with automatic fixture fallback.
-
----
-
-## 13. Testing and Verification Results
-
-| Check / Test | Command / Procedure | Result | Evidence / Log Excerpt | Notes |
+| Functional Area | Intended Purpose | Actual Implementation | Status | Verification Evidence |
 | :--- | :--- | :--- | :--- | :--- |
-| **Node Runtime** | `node -v` | **PASS** | `v24.20.0` | Node 20+ requirement met |
-| **npm Runtime** | `npm -v` | **PASS** | `11.19.0` | Package manager verified |
-| **TypeScript Check** | `npx tsc --noEmit` | **PASS** | Exit code 0, 0 errors | Complete type safety verified |
-| **Unit Test Suite** | `npm test` (`vitest run`) | **PASS** | 26/26 tests passed (8 files, 15.4s) | Full coverage of schemas, ledger, editor |
-| **Gemini Integration** | `npx vitest run tests/gemini.test.ts` | **PASS** | Passed in 14.2s | Live structured plan returned via API |
-| **Production Build** | `npm run build` | **PASS** | Compiled successfully in 2.2s | All routes static/dynamic compiled |
-| **HTTP Shell Smoke** | `node tests/smoke.js` (Test 1) | **PASS** | HTTP 200 OK | `Website Studio 2.0` and `.bs` present |
-| **HTTP Plan Smoke** | `node tests/smoke.js` (Test 2) | **PASS** | HTTP 200 OK | 4 pages, family `local-service` |
-| **HTTP Generate Smoke** | `node tests/smoke.js` (Test 3) | **PASS** | HTTP 200 OK (148 credits, `isMocked: false`) | Real Gemini generation verified |
-| **Desktop Capture** | Headless Chrome (1440x960) | **PASS** | `live-desktop.png` (407 KB) | Clean desktop header, full layout |
-| **Mobile Capture** | Headless Chrome (480x844) | **PASS** | `live-mobile.png` (91 KB) | Container query triggers hamburger menu |
-| **In-App QA Runner** | UI `QaPanel` execution | **PASS** | 10/10 checks passed (100% score) | Verified in browser UI |
+| **Streamlined Intake** | Minimal 3-field intake eliminating fatigue | `businessName`, `category`, `offerDescription` | **IMPLEMENTED & VERIFIED** | `src/components/intake/IntakeModal.tsx` |
+| **Local Inference Rules** | Infer archetype, journey, and CTA with 0 model calls | Pure TypeScript regex matching across 14 archetypes | **IMPLEMENTED & VERIFIED** | `tests/inference.test.ts` (7 tests pass) |
+| **Ambiguity Fallback** | Resolve contradictory briefs via bounded AI | `classifyAmbiguity()` with Zod schema validation | **IMPLEMENTED & VERIFIED** | `tests/gemini.test.ts` |
+| **Adaptive Questions** | Scoped questions without irrelevant domain noise | Deterministic catalog with non-retail exclusion guard | **IMPLEMENTED & VERIFIED** | `tests/adaptive-questions.test.ts` (4 tests pass) |
+| **Plan Review & Edit** | Review sitemap and primary CTA before build | Editable sitemap chip list, CTA selector, preset picker | **IMPLEMENTED & VERIFIED** | `IntakeModal.tsx` Step 4 |
+| **Budget & Telemetry** | Enforce 250 credit ceiling and track provider USD | `BudgetGuard` + `UsageLedger` (Gemini 3.5 rates) | **IMPLEMENTED & VERIFIED** | `tests/budget.test.ts` (3 tests pass) |
+| **Site Planning** | Generate IA, sitemap, primary CTA, and preset | `POST /api/plan`, `generatePlan()` | **IMPLEMENTED & VERIFIED** | `tests/gemini.test.ts`, `tests/smoke.js` |
+| **Section Generation** | Generate structured props per component | Page-concurrent Gemini calls with timeout & repair | **IMPLEMENTED & VERIFIED** | `tests/generation.test.ts`, smoke tests |
+| **Model Adapter** | Abstract Gemini API and deterministic fixtures | `GeminiProvider` + `FixtureProvider` | **IMPLEMENTED & VERIFIED** | `tests/gemini.test.ts`, `TR-GEMINI-01` |
+| **Schema Validation** | Reject dangerous/invalid props and XSS | Zod schemas across all models, sections, and actions | **IMPLEMENTED & VERIFIED** | `tests/schema.test.ts` (6 tests pass) |
+| **Design System** | Apply 292-look design library tokens | Scoped `.bs` variables, 8 presets, 4 families | **IMPLEMENTED & VERIFIED** | `tests/renderer.test.ts`, `brandscalers-library.css` |
+| **Renderer** | Render full pages from JSON document | `WebsiteRenderer`, `registry.tsx` | **IMPLEMENTED & VERIFIED** | `tests/renderer.test.ts` (4 tests pass) |
+| **Section Editing** | Granular in-place text and card edits (0 credits) | `SectionEditor.tsx`, `editor-core.ts` | **IMPLEMENTED & VERIFIED** | `tests/editor.test.ts` (3 tests pass) |
+| **Responsive Preview**| Test 1440px, 768px, 390px, 360px viewports | Toolbar + CSS Container Queries (`inline-size`) | **IMPLEMENTED & VERIFIED** | Verified in browser UI and test harness |
+| **In-App QA Engine** | Run 13 deterministic validation checks | `QaPanel.tsx`, `checks.ts` (Blockers/Warnings/Info) | **IMPLEMENTED & VERIFIED** | `tests/qa.test.ts` (4 tests pass) |
+| **Publishing Adapter** | QA-gated release and truthful demo snapshot | `publish-adapter.ts`, `PublishModal.tsx` | **IMPLEMENTED & VERIFIED** | `tests/publish.test.ts` (2 tests pass) |
 
 ---
 
-## 14. Current Limitations and Incomplete Functionality
+## 4. The 14 Business Archetypes Supported by Local Inference
 
-1. **Simulated Form Lead Submission:** The contact form validates inputs and displays truthful success notices, but does not dispatch real SMTP emails or insert rows into a production database.
-2. **Preset Scope:** 8 presets and 12 components are implemented from the 292 looks / 98 pieces in the reference library.
-3. **No Drag-and-Drop Reordering:** Section reordering is currently done via code/document structure rather than an interactive drag-and-drop UI handle.
-4. **Single-Level Undo:** Revision history is held in component memory; browser refresh resets to the active document without persistent database saves.
-5. **Fixed 4-Page Sitemap:** Vertical slice generator produces exactly 4 pages (`home`, `about`, `services`, `contact`). Custom multi-level nested routing is planned for future milestones.
+The local inference engine (`src/engine/inference/rules.ts`) maps any business brief into one of 14 canonical archetypes:
 
----
-
-## 15. Upcoming Features and Implementation Roadmap
-
-### Phase 1: Vertical Slice Polish (Immediate Presentation Follow-ups)
-* Add visual badge in toolbar showing the exact Gemini model name used.
-* Add modal to display Gemini's generated `plan.rationale` directly to reviewers.
-
-### Phase 2: Production Readiness (Next Milestone)
-* Connect production Supabase PostgreSQL persistence for multi-tenant website storage.
-* Integrate Resend / SendGrid API for live contact form lead delivery.
-* Implement self-hosted Google Fonts to eliminate external font loading latency.
-* Expand component library from 12 to 24 components (incorporating pricing tables, stats counters, logo clouds, team grids).
-
-### Phase 3: BrandScalers Website Studio Integration
-* Mount Website Studio 2.0 engine behind a feature flag in the production BrandScalers dashboard.
-* Map production user credit balances to `UsageLedger`.
-* Add custom domain routing and Cloudflare SSL provisioning.
+1. **`healthcare`:** Dental practices, clinics, therapy, medical centres. Primary CTA: `Book Consultation` / `Call Reception`. Irrelevant questions (e-commerce, shipping, checkout) are strictly blocked.
+2. **`ecommerce`:** Online retail stores, direct checkout, physical shipping. Primary CTA: `Shop Collection`.
+3. **`catalogue`:** Showrooms, wholesale, high-ticket bespoke craft without self-checkout. Primary CTA: `Request Price Sheet` / `Enquire`.
+4. **`local-service`:** Plumbing, electrical, automotive, home repairs. Primary CTA: `Request Emergency Callout` / `Get Quote`.
+5. **`agency`:** Digital marketing, software dev, design agencies. Primary CTA: `Book Discovery Call`.
+6. **`portfolio`:** Photographers, architects, interior designers. Primary CTA: `View Projects` / `Hire Me`.
+7. **`restaurant`:** Cafes, bistros, bakeries, bars. Primary CTA: `Reserve Table` / `View Menu`.
+8. **`education`:** Academies, tutors, course creators. Primary CTA: `Enroll Today` / `View Syllabus`.
+9. **`event-venue`:** Wedding halls, conference spaces. Primary CTA: `Check Availability` / `Schedule Tour`.
+10. **`hospitality`:** Boutique hotels, B&Bs, resorts. Primary CTA: `Check Dates` / `Book Stay`.
+11. **`nonprofit`:** Charities, foundations, community hubs. Primary CTA: `Support Our Mission` / `Donate`.
+12. **`personal-brand`:** Keynote speakers, authors, executive coaches. Primary CTA: `Read Bio` / `Inquire for Speaking`.
+13. **`lead-gen`:** Mortgage brokers, commercial solar, insurance. Primary CTA: `Calculate Savings` / `Request Assessment`.
+14. **`mixed-other`:** Multidisciplinary or uncategorized businesses. Primary CTA: `Learn More`.
 
 ---
 
-## 16. Existing Website Studio Integration
+## 5. Deterministic QA Engine & Publishing Gate (13 Checks)
 
-### Demarcation Between Existing Studio and Website Studio 2.0
-* **Existing Studio:** Operates in production with Supabase, rigid 4-layout templates, OpenAI integration, and existing customer accounts.
-* **Website Studio 2.0 (This Project):** Operates as a completely isolated Next.js application in `e:\website-builder-2.0`. It contains **no hardcoded dependencies on production databases, production secrets, or legacy layouts**.
+The deterministic QA engine classifies checks into **Blocker**, **Warning**, and **Info**:
 
-### The Integration Adapter Contract
-Website Studio 2.0 exposes a clean, decoupled boundary via [`src/engine/export/export-project.ts`](file:///e:/website-builder-2.0/src/engine/export/export-project.ts):
-```typescript
-export interface StudioExportBundle {
-  schemaVersion: '1.0';
-  exportedAt: string;
-  sourceEngine: 'WebsiteStudio-2.0-EngineSlice';
-  project: {
-    id: string;
-    design: WebsiteDocument['design'];
-    pages: WebsiteDocument['pages'];
-  };
-  metrics: {
-    totalPages: number;
-    totalSections: number;
-    creditsConsumed: number;
-    modelUtilized: string;
-  };
-}
-```
-This payload can be stored directly as a JSONB column in Supabase or handed off to static site hosting.
+| ID | Check Name | Classification | Rule & Gate Logic |
+| :--- | :--- | :--- | :--- |
+| **QA-SCHEMA-01** | Strict Schema Validation | **Blocker** | Entire document must pass Zod schema parsing. |
+| **QA-NAV-01** | Mandatory Core Pages | **Blocker** | Must contain `/home`, `/about`, `/services`, `/contact`. |
+| **QA-NAV-02** | Page Slug Uniqueness | **Blocker** | No colliding or duplicate page slugs allowed. |
+| **QA-NAV-03** | Internal Navigation Resolution | **Blocker** | All internal links and CTAs must resolve to valid pages. |
+| **QA-BUDGET-01** | 250-Credit Hard Cap | **Blocker** | Credits billed must not exceed 250 credits. |
+| **QA-SEC-01** | Zero Code Injection | **Blocker** | No `<script>` tags or `javascript:` URI protocols. |
+| **QA-A11Y-01** | Single H1 Per Page | **Warning** | At most one hero H1 per page for accessible heading flow. |
+| **QA-FORM-01** | Form Demo Disclosure | **Warning** | Contact forms must disclose demo mode when unlinked. |
+| **QA-DATA-01** | Social Proof Honesty | **Warning** | Testimonials must disclose demo data flag. |
+| **QA-SEO-01** | SEO Metadata Coverage | **Warning** | All pages must have SEO meta title and description. |
+| **QA-CONTENT-01** | Truthful Content | **Warning** | Zero unreplaced template placeholders like `{{...}}`. |
+| **QA-DESIGN-01** | Design Token Cohesion | **Info** | Verified against design family and preset tokens. |
+| **QA-RESP-01** | Container Query Readiness | **Info** | Tokens and density verified for fluid responsive layout. |
+
+### Publication Gate (`canPublish`):
+- If `blockerCount > 0`: `canPublish = false`, `verdict = NO-GO`. Publishing is physically prevented in `PublishModal`.
+- If `blockerCount === 0`: `canPublish = true`, `verdict = GO`. Publication succeeds and exports the verified bundle with version snapshotting.
 
 ---
 
-## 17. Final Project Status
+## 6. Financial & Telemetry Separation
 
-| Area | Current Status | Evidence-Based Summary |
+Website Studio 2.0 strictly decouples **Customer Business Credits** from **Provider Infrastructure USD Telemetry**:
+
+| Dimension | Customer Business Credits | Provider USD Telemetry |
 | :--- | :--- | :--- |
-| **Core Vertical Slice** | **IMPLEMENTED AND TESTED** | 4-step intake, 4-page generation, responsive rendering, and export verified. |
-| **AI Generation** | **IMPLEMENTED AND TESTED** | Live Google Gemini API (`gemini-3.5-flash-lite`) verified; completes in 16–21s. |
-| **Design and Rendering** | **IMPLEMENTED AND TESTED** | 1,658 lines of BrandScalers design library CSS integrated; 8 presets, 12 components. |
-| **Editing and Preview** | **IMPLEMENTED AND TESTED** | In-place section editing (0 credits), 4 responsive viewports, container-query mobile menu. |
-| **Testing and Reliability** | **IMPLEMENTED AND TESTED** | 26/26 unit tests pass, 0 TS errors, clean Next.js production build, smoke tests pass. |
-| **Credits & Budgets** | **IMPLEMENTED AND TESTED** | 250-credit pre-flight ceiling strictly enforced; 148–220 credits consumed per build. |
-| **Production Integration** | **DOCUMENTED / ADAPTER READY** | Clean export bundle contract ready; production billing/DB safely decoupled. |
-| **Presentation Readiness** | **PASS WITH LIMITATIONS** | Complete presentation happy path verified end-to-end with honest demo disclosures. |
+| **Purpose** | Billing unit charged to customer account | Operational infrastructure cost to BrandScalers |
+| **Ceiling** | Hard cap of **250 credits** per initial build | Unlimited (monitored per call) |
+| **Failed Build Charge** | Exactly **0 credits** (transactional rollback) | Recorded for error analytics |
+| **Manual Section Edits** | Completely **free (0 credits)** | Zero API calls (0 tokens) |
+| **Rate Basis** | Pre-set credit model | Gemini 3.5 Flash Lite: $0.075/1M input, $0.30/1M output |
+| **Display in UI** | Subbar: `Budget: 133 / 250 credits` | Subbar: `Est. Provider Cost: $0.00027` |
 
-### Overall Verdict: **PASS WITH LIMITATIONS**
+---
 
-**Justification:**  
-The defined vertical slice requirements are fully implemented and verified with empirical test evidence: live business intake, structured planning, live Gemini generation under the 250-credit ceiling, responsive multi-page rendering across 4 viewports, section-level editing, and automated QA. The limitations (mocked email dispatch, 12 of 98 library components implemented, and decoupled production billing) are deliberate vertical-slice boundaries that are fully disclosed and documented.
+## 7. Testing and Verification Evidence
+
+| Check / Test | Command / Procedure | Result | Evidence / Log Excerpt |
+| :--- | :--- | :--- | :--- |
+| **TypeScript Typecheck** | `npx tsc --noEmit` | **PASS** | Exit code 0, 0 errors across entire workspace. |
+| **Full Vitest Suite** | `npx vitest run` | **PASS** | **41 tests passed across 11 files in 5.84s.** |
+| **Local Rules Engine** | `npx vitest run tests/inference.test.ts` | **PASS** | 7 tests pass; 14 archetypes, confidence, contradictions. |
+| **Adaptive Questions** | `npx vitest run tests/adaptive-questions.test.ts` | **PASS** | 4 tests pass; `aiCallPolicy: 'never'`; retail exclusion. |
+| **Stage 9 Publishing** | `npx vitest run tests/publish.test.ts` | **PASS** | 2 tests pass; QA blocker gating & rollback verified. |
+| **QA Runner Engine** | `npx vitest run tests/qa.test.ts` | **PASS** | 4 tests pass; 13 checks; Blocker/Warning/Info categorization. |
+| **Gemini Integration** | `npx vitest run tests/gemini.test.ts` | **PASS** | Live structured planning in 3.5s; ambiguity fallback in 1.2s. |
+| **Production Build** | `npm run build` | **PASS** | Compiled successfully in 3.1s; static & dynamic routes compiled. |
+| **HTTP Shell Smoke** | `node tests/smoke.js` (Test 1) | **PASS** | `GET /` returned HTTP 200 OK with `.bs` styling. |
+| **HTTP Plan Smoke** | `node tests/smoke.js` (Test 2) | **PASS** | `POST /api/plan` returned HTTP 200 OK (4 pages, family `local-service`). |
+| **HTTP Generate Smoke** | `node tests/smoke.js` (Test 3) | **PASS** | `POST /api/generate` returned HTTP 200 OK (133 credits, `isMocked: false`). |
+
+---
+
+## 8. Limitations & Integration Boundaries
+
+1. **Standalone Vertical Slice:** This project is an engine vertical slice operating in `e:\website-builder-2.0`. It contains no hardcoded dependencies on production Supabase databases, production secrets, or customer records.
+2. **Truthful Demo Disclosures:** Contact form submissions validate locally and display demo feedback. Publishing outputs a verified `StudioExportBundle` v1.0 with explicit disclosure: `[DEMO MODE: Site exported to verified BrandScalers bundle; standalone vertical slice has no live DNS or external hosting connected]`.
+3. **Component Palette:** 12 core responsive components are implemented out of the 98 pieces in the complete design reference library.
+
+---
+
+## 9. Final Release Recommendation
+
+### **Recommendation: PASS (100% READY FOR PRESENTATION & HANDOFF)**
+
+All evolution requirements in `spec.md` have been fulfilled and verified:
+1. Streamlined 3-field intake with zero-call local deterministic inference rules engine across 14 archetypes.
+2. Archetype-scoped adaptive questions with strict guard preventing irrelevant retail questions for service businesses.
+3. Reviewable and editable site plan before launch.
+4. Live Google Gemini 3.5 Flash Lite structured generation consuming only 133 / 250 credits.
+5. In-place section editing at 0 credits.
+6. Deterministic QA engine with 13 automated checks and candidate publication gating.
+7. Stage 9 publishing adapter with snapshot versioning and truthful demo mode disclosure.
+8. Decoupled provider USD telemetry from customer business credits.

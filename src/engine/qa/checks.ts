@@ -3,8 +3,9 @@ import { WebsiteDocument, WebsiteDocumentSchema } from '../schemas/website-docum
 export interface QaCheckResult {
   id: string;
   name: string;
-  category: 'schema' | 'links' | 'accessibility' | 'design' | 'budget' | 'security';
+  category: 'schema' | 'links' | 'accessibility' | 'design' | 'budget' | 'security' | 'seo' | 'assets';
   severity: 'P0' | 'P1' | 'P2' | 'P3';
+  classification: 'Blocker' | 'Warning' | 'Info';
   passed: boolean;
   message: string;
   details?: string;
@@ -17,6 +18,9 @@ export interface QaReport {
   failedCount: number;
   overallScore: number;
   verdict: 'GO' | 'NO-GO';
+  canPublish: boolean;
+  blockerCount: number;
+  warningCount: number;
   checks: QaCheckResult[];
 }
 
@@ -30,6 +34,7 @@ export function runWebsiteQa(doc: WebsiteDocument): QaReport {
     name: 'Strict Schema Validation',
     category: 'schema',
     severity: 'P0',
+    classification: 'Blocker',
     passed: schemaValidation.success,
     message: schemaValidation.success
       ? 'Document passed full Zod schema validation.'
@@ -45,6 +50,7 @@ export function runWebsiteQa(doc: WebsiteDocument): QaReport {
     name: 'Mandatory Pages Presence (Home, About, Services, Contact)',
     category: 'links',
     severity: 'P1',
+    classification: 'Blocker',
     passed: missingPages.length === 0,
     message: missingPages.length === 0
       ? `All 4 core pages present: [${presentSlugs.join(', ')}]`
@@ -62,6 +68,7 @@ export function runWebsiteQa(doc: WebsiteDocument): QaReport {
     name: 'Page Slug Uniqueness',
     category: 'schema',
     severity: 'P1',
+    classification: 'Blocker',
     passed: duplicateSlugs.length === 0,
     message: duplicateSlugs.length === 0
       ? 'All page slugs are unique.'
@@ -69,7 +76,7 @@ export function runWebsiteQa(doc: WebsiteDocument): QaReport {
   });
 
   // 4. Internal Links Resolution Check (AC-06)
-  let brokenInternalLinks: string[] = [];
+  const brokenInternalLinks: string[] = [];
   doc.pages.forEach((p) => {
     p.sections.forEach((s) => {
       const props = s.props as any;
@@ -92,6 +99,7 @@ export function runWebsiteQa(doc: WebsiteDocument): QaReport {
     name: 'Internal Navigation Resolution',
     category: 'links',
     severity: 'P1',
+    classification: 'Blocker',
     passed: brokenInternalLinks.length === 0,
     message: brokenInternalLinks.length === 0
       ? 'All internal links and CTAs target valid pages.'
@@ -99,7 +107,7 @@ export function runWebsiteQa(doc: WebsiteDocument): QaReport {
   });
 
   // 5. Single H1 Headline Per Page (Accessibility)
-  let pagesWithMultipleH1: string[] = [];
+  const pagesWithMultipleH1: string[] = [];
   doc.pages.forEach((p) => {
     const heroSections = p.sections.filter(
       (s) => s.type === 'hero-split' || s.type === 'hero-centered'
@@ -113,9 +121,10 @@ export function runWebsiteQa(doc: WebsiteDocument): QaReport {
     name: 'Single H1 Heading Per Page Rule',
     category: 'accessibility',
     severity: 'P2',
+    classification: 'Warning',
     passed: pagesWithMultipleH1.length === 0,
     message: pagesWithMultipleH1.length === 0
-      ? 'Every page contains exactly one primary hero H1.'
+      ? 'Every page contains at most one primary hero H1.'
       : `Multiple heroes found on pages: ${pagesWithMultipleH1.join(', ')}`,
   });
 
@@ -136,10 +145,13 @@ export function runWebsiteQa(doc: WebsiteDocument): QaReport {
     name: 'Contact Form Demo Mode Disclosure',
     category: 'security',
     severity: 'P1',
-    passed: contactFormPresent && contactFormDemoFlagged,
+    classification: 'Warning',
+    passed: !contactFormPresent || contactFormDemoFlagged,
     message: contactFormPresent && contactFormDemoFlagged
       ? 'Contact form present and explicitly marked with truthful Demo Mode disclosure.'
-      : 'Contact form missing or failed demo mode honesty check.',
+      : contactFormPresent
+      ? 'Contact form missing required demo mode honesty flag.'
+      : 'No contact form section on this page.',
   });
 
   // 7. Testimonials Truthful Demo Data Check (AC-13)
@@ -159,8 +171,11 @@ export function runWebsiteQa(doc: WebsiteDocument): QaReport {
     name: 'Social Proof Honesty & Demo Data Flag',
     category: 'security',
     severity: 'P1',
+    classification: 'Warning',
     passed: !testimonialPresent || testimonialsDemoFlagged,
-    message: testimonialsDemoFlagged
+    message: !testimonialPresent
+      ? 'No testimonial sections present.'
+      : testimonialsDemoFlagged
       ? 'Testimonials explicitly marked with unverified demo data disclosure.'
       : 'Testimonial list missing required demo data disclosure.',
   });
@@ -173,6 +188,7 @@ export function runWebsiteQa(doc: WebsiteDocument): QaReport {
     name: '250-Credit Hard Cap Enforcement',
     category: 'budget',
     severity: 'P0',
+    classification: 'Blocker',
     passed: isBudgetSafe,
     message: isBudgetSafe
       ? `Credit consumption (${actualCredits} credits) satisfies hard cap (<= 250 credits).`
@@ -188,6 +204,7 @@ export function runWebsiteQa(doc: WebsiteDocument): QaReport {
     name: 'Design System & Token Cohesion',
     category: 'design',
     severity: 'P2',
+    classification: 'Info',
     passed: hasValidColors && hasValidTypography,
     message: `Tokens coherent for family "${doc.design.family}" and preset "${doc.design.preset}".`,
   });
@@ -201,19 +218,80 @@ export function runWebsiteQa(doc: WebsiteDocument): QaReport {
     name: 'Zero Executable Code Injection',
     category: 'security',
     severity: 'P0',
+    classification: 'Blocker',
     passed: !hasScriptTags && !hasJavascriptProtocol,
     message: (!hasScriptTags && !hasJavascriptProtocol)
       ? 'Clean document: no script tags or javascript: protocol URIs detected.'
       : 'SECURITY VIOLATION: Executable script or protocol injection detected in document.',
   });
 
-  // Calculate scores
+  // 11. SEO Metadata Presence Check
+  const pagesMissingSeo = doc.pages.filter(
+    (p) => !p.seo || !p.seo.title || !p.seo.description
+  );
+  checks.push({
+    id: 'QA-SEO-01',
+    name: 'Page SEO Metadata Coverage',
+    category: 'seo',
+    severity: 'P2',
+    classification: 'Warning',
+    passed: pagesMissingSeo.length === 0,
+    message: pagesMissingSeo.length === 0
+      ? 'All pages have SEO meta titles and descriptions populated.'
+      : `Missing SEO meta on pages: ${pagesMissingSeo.map((p) => p.slug).join(', ')}`,
+  });
+
+  // 12. Responsive Viewport Safe Tokens
+  const validBreakpoints = !!(doc.design.tokens.density && doc.design.tokens.radius);
+  checks.push({
+    id: 'QA-RESP-01',
+    name: 'Responsive Viewport & Container Query Readiness',
+    category: 'design',
+    severity: 'P3',
+    classification: 'Info',
+    passed: validBreakpoints,
+    message: validBreakpoints
+      ? 'Design tokens specify density and corner radius suitable for fluid container queries (320px to 1440px).'
+      : 'Missing fluid tokens in design document.',
+  });
+
+  // 13. Truthful Demo Content Placeholder Check
+  const unreplacedPlaceholders: string[] = [];
+  const placeholderRegex = /\{\{[^}]+\}\}|\[INSERT_[A-Z_]+\]/i;
+  doc.pages.forEach((p) => {
+    p.sections.forEach((s) => {
+      const secStr = JSON.stringify(s.props);
+      if (placeholderRegex.test(secStr)) {
+        unreplacedPlaceholders.push(`${p.slug} (${s.type})`);
+      }
+    });
+  });
+  checks.push({
+    id: 'QA-CONTENT-01',
+    name: 'Truthful Demo Content & Zero Unparsed Tokens',
+    category: 'security',
+    severity: 'P2',
+    classification: 'Warning',
+    passed: unreplacedPlaceholders.length === 0,
+    message: unreplacedPlaceholders.length === 0
+      ? 'Zero unparsed template tokens or raw bracket placeholders found.'
+      : `Unreplaced placeholders found in sections: ${unreplacedPlaceholders.join(', ')}`,
+  });
+
+  // Calculate scores & verdicts
   const passedCount = checks.filter((c) => c.passed).length;
   const failedCount = checks.length - passedCount;
   const overallScore = Math.round((passedCount / checks.length) * 100);
+
+  const blockerCount = checks.filter((c) => !c.passed && c.classification === 'Blocker').length;
+  const warningCount = checks.filter((c) => !c.passed && c.classification === 'Warning').length;
+
   const hasP0orP1Failures = checks.some(
     (c) => !c.passed && (c.severity === 'P0' || c.severity === 'P1')
   );
+
+  const canPublish = blockerCount === 0;
+  const verdict = blockerCount === 0 && !hasP0orP1Failures ? 'GO' : 'NO-GO';
 
   return {
     timestamp: new Date().toISOString(),
@@ -221,7 +299,10 @@ export function runWebsiteQa(doc: WebsiteDocument): QaReport {
     passedCount,
     failedCount,
     overallScore,
-    verdict: hasP0orP1Failures ? 'NO-GO' : 'GO',
+    verdict,
+    canPublish,
+    blockerCount,
+    warningCount,
     checks,
   };
 }

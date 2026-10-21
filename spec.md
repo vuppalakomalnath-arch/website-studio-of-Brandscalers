@@ -1,1080 +1,456 @@
-# Website Studio 2.0 --- Single Source of Truth (`spec.md`)
-
-**Status:** One-day, presentation-ready vertical-slice specification\
-**Owner:** Project developer\
-**Target environment:** Antigravity IDE with two independent
-chats/agents\
-**Integration target:** Existing BrandScalers AI marketing platform /
-Website Studio\
-**Hard constraint:** Initial AI website generation must never exceed 250
-business credits\
-**Primary objective:** Demonstrate a distinctly designed, responsive,
-editable, functional multi-page business website generated from a
-business brief, using the existing BrandScalers design library where
-feasible.
-
-> **Scope honesty:** A single day is sufficient for a disciplined,
-> presentation-ready vertical slice if existing code/library pieces can
-> be reused. It is not a realistic commitment for a fully
-> production-hardened replacement for every Website Studio capability.
-> The one-day deliverable must demonstrate the core generation pipeline
-> and prove that it can be integrated later. Do not fake completed
-> capabilities.
-
-------------------------------------------------------------------------
-
-## 0. Non-negotiable instructions for every agent
-
-1.  Read this `spec.md` completely before changing files.
-2.  Treat this document as the single source of truth. If code, an agent
-    assumption, or a prompt conflicts with this spec, stop and report
-    the conflict.
-3.  Do not modify the existing production Website Studio or production
-    database. Work in a new project/repository and use isolated
-    local/test Supabase resources only.
-4.  Do not copy secrets, production customer data, API keys,
-    credentials, or `.env` files into the new project.
-5.  Do not invent business facts, reviews, certifications, addresses,
-    prices, or customer claims. Mark demo data as demo data.
-6.  Do not generate a whole website as arbitrary AI-written React code.
-    The AI produces validated structured website data; trusted renderer
-    code produces the page.
-7.  Reuse the supplied design library only after inspecting and testing
-    the relevant component/rendering contracts. Do not blindly paste the
-    1.5 MB playground HTML into the application.
-8.  Do not claim a test passed unless it was actually run and its result
-    was observed.
-9.  Do not remove tests, weaken assertions, hide console errors, or
-    change requirements to make the build appear green.
-10. The builder agent owns implementation. The independent QA agent
-    reviews requirements, runs tests, captures evidence, and reports
-    defects; it must not silently rewrite implementation.
-11. Any scope reduction must be recorded in `DECISIONS.md` and approved
-    by the user. Preserve a working build at every checkpoint.
-12. Prefer a small complete vertical slice over many unfinished
-    features.
-13. Never spend or charge credits for failed builds. Credit charging
-    must be transactional and idempotent in any integrated
-    implementation.
-14. Before finishing, report what is implemented, what was tested, what
-    failed, what remains mocked, and what is not production-ready.
-
-------------------------------------------------------------------------
-
-## 1. Product problem and outcome
-
-### Current situation
-
-The existing Website Studio uses Next.js/React on Vercel, Supabase
-Postgres, Supabase Storage, previously OpenAI `gpt-5.4-mini`, Pexels/Pixabay
-assets, and a JSON-first generation flow. The generated JSON is rendered
-through four fixed React layouts. A separate design library has been
-created with plain HTML renderers, 98 pieces and 292 looks as described
-by the project owner, but it is not connected to Website Studio.
-
-The reported user problem is that generated sites look generic and
-static. The likely structural limitation is that the model supplies
-text/content while a small fixed layout set controls the visual
-composition.
-
-### Product outcome
-
-Build a separate, demoable engine in Antigravity IDE that:
-- Collects comprehensive business information from users.
-- Creates a business-specific website plan and sitemap.
-- Chooses a design family and validated design tokens from the design library.
-- Generates structured page and section data using Google Gemini models (`gemini-3` and `gemini-3.5-flash-lite`).
-- Renders pages using a reusable, trusted component system.
-- Uses appropriate supplied/demo/stock assets, with source metadata.
-- Supports real navigation and working core interactions.
-- Provides desktop and mobile preview and section-level editing.
-- Runs deterministic checks and automated smoke tests.
-- Enforces a maximum initial generation charge of 250 business credits.
-- Keeps the core engine independent from the existing Studio UI, so it can be integrated behind an adapter later.
-
-### Success statement
-
-A reviewer can enter a realistic business brief, generate a multi-page
-site with a coherent visual direction, navigate between pages, use the
-main CTA/contact form, edit a section, preview mobile layout, run QA,
-and see a clear result---all without relying on arbitrary AI-generated
-code.
-
-------------------------------------------------------------------------
-
-## 2. One-day delivery definition
-
-### Immediate vertical slice scope
-
-The immediate objective is to build a working, presentation-ready vertical slice within one day. This is a vertical slice, not a claim that the complete production-ready Website Studio replacement has been finished. The immediate presentation scope must remain strictly distinct from remaining requirements for production integration.
-
-The vertical slice must demonstrate that the engine can:
-1. **Collect information from users about their businesses** through structured intake covering common and category-specific needs.
-2. **Generate an appropriate website from the collected information** using structured planning and content generation.
-3. **Select and compose suitable design components intelligently** rather than choosing randomly or using identical layouts.
-4. **Render different websites for different business categories** with distinct visual treatments, typography, and section order.
-5. **Allow users to edit supported website features** (text, section visibility, surface styles, alignment) without breaking unrelated sections.
-6. **Preview and test the generated websites** across multiple responsive viewports (Desktop 1440px, Tablet 768px, Mobile 390px, Compact Mobile 360px).
-7. **Verify core website functionality through testing** (schema validation, link targets, contact form feedback, credit ceiling enforcement).
-
-### Required presentation deliverable
-
-By the end of the day, the new project must demonstrate this happy path:
-
-1.  Enter business name, business type, location/service area, audience,
-    website goal, services, differentiators, contact details, preferred
-    style, and optional reference/brand notes.
-2.  Review a generated sitemap/design plan.
-3.  Generate a website with at least Home, About, Services, and Contact
-    pages, with page structure adjusted to the business.
-4.  Render at least three visibly different design directions from the
-    shared component system (e.g. editorial/premium,
-    local-service/trust-focused, modern/creative).
-5.  Navigate between pages.
-6.  Use at least one working CTA and a validated contact form in demo
-    mode.
-7.  Edit text and change a section's supported design properties without
-    regenerating the whole site.
-8.  Switch desktop/mobile preview and show a responsive layout.
-9.  Run a QA report with actual deterministic checks.
-10. Show estimated/actual generation cost and demonstrate the 250-credit
-    guard.
-11. Display a clear "demo/local mode" status for any integrations that
-    are mocked.
-
-### Explicitly out of scope for the one-day prototype
-
-Do not attempt to deliver all of these in one day: - Full replacement of
-production Website Studio. - Arbitrary website/application code
-generation. - Native ecommerce checkout or payment processing. - Native
-booking engine. - Membership/authentication for published websites. -
-Full CMS/blog publishing. - Production custom-domain
-purchase/management. - Complete GA4, GTM, Search Console, and sitemap
-deployment integration. - Production multi-tenant security
-certification. - Full import/migration of every one of the 98 pieces/292
-looks. - Perfect visual parity with Lovable or Wix. - A guarantee that
-every generated site is publish-ready without human review.
-
-These are future roadmap capabilities for production integration. Do not fake them in the demo.
-
-------------------------------------------------------------------------
-
-## 3. Architecture and boundaries
-
-### Architecture principle
-
-**AI plans and selects; deterministic code validates and renders.**
-
-The model must never be trusted as the authority for executable code,
-arbitrary URLs, CSS, or unsupported component names.
-
-### Logical flow
-
-`Business brief → normalized business profile → site plan → design specification → page/section JSON → schema validation → trusted renderer → browser preview → deterministic QA → targeted repair → user approval → export/integration adapter`
-
-### Required modules
-
-1.  **Intake module** --- form state and business profile validation.
-2.  **Planner** --- creates sitemap, page goals, section order, CTA
-    plan, and missing-information warnings.
-3.  **Design selector** --- selects a design family, tokens, and
-    component variants from an allowlist.
-4.  **Content generator** --- creates factual, business-specific content
-    in structured fields.
-5.  **Schema validator** --- rejects unknown component types, invalid
-    properties, unsupported actions, excessive content, and unsafe
-    values.
-6.  **Renderer** --- maps approved component types to trusted React
-    components.
-7.  **Asset resolver** --- maps asset IDs to local/demo assets or
-    approved provider results and stores attribution metadata.
-8.  **Editor** --- edits the structured document, not raw generated
-    code.
-9.  **QA runner** --- validates data, links, required pages, form
-    schema, responsive viewport, and browser console/errors.
-10. **Usage ledger** --- estimates/records usage and enforces the
-    250-credit cap.
-11. **Export adapter** --- serializes the project in a stable, versioned
-    format for later integration with the existing platform.
-
-### Suggested stack for this isolated prototype
-
-Use the stack that can be bootstrapped and tested fastest in the
-available environment. Preferred default: - Next.js + TypeScript +
-React. - Tailwind CSS or the existing library CSS, but do not create
-competing styling systems unnecessarily. - Zod for runtime schema
-validation. - OpenAI server-side SDK through a provider adapter. -
-Playwright for browser smoke tests if install/runtime time allows. -
-Local in-memory demo state or local fixture data first. Supabase is
-optional for the one-day prototype; use a separate test project only if
-credentials and schema are already available. - No secrets in
-client-side code. - No direct database writes from the browser.
-
-Do not introduce a queue, vector database, microservices, complex agent
-framework, or a second backend unless an actual requirement demands it.
-
-### Repository structure
-
-Use this as the target, adapting only when the existing framework
-requires a different convention:
-
-``` text
-website-studio-engine/
-  spec.md
-  README.md
-  DECISIONS.md
-  .env.example
-  package.json
-  src/
-    app/
-      page.tsx
-      api/
-        generate/route.ts
-        qa/route.ts
-    components/
-      intake/
-      editor/
-      preview/
-      ui/
-    engine/
-      schemas/
-        business-profile.ts
-        site-plan.ts
-        website-document.ts
-      planner/
-      design/
-        tokens.ts
-        presets.ts
-        manifest.ts
-      generation/
-        provider.ts
-        openai-provider.ts
-        prompts.ts
-        budget.ts
-      renderer/
-        WebsiteRenderer.tsx
-        registry.ts
-        components/
-      assets/
-        resolver.ts
-      qa/
-        checks.ts
-      export/
-        export-project.ts
-    fixtures/
-      demo-business.json
-      demo-website.json
-  tests/
-    schema.test.ts
-    budget.test.ts
-    renderer.test.ts
-    generation.test.ts
-    e2e/
-      happy-path.spec.ts
-```
-
-The agent may adjust paths to the current framework, but must preserve
-the logical module boundaries.
-
-------------------------------------------------------------------------
-
-## 4. Design library analysis and integration strategy
-
-### What has been supplied
-
-The owner supplied four foundational design library and sample assets:
-1. `BrandScalers-Design-Library-292-looks.html` (comprehensive design library and look playground)
-2. `Sample-page-Busy-clinic.html` (healthcare / clinic reference page)
-3. `Sample-page-Editorial-shop.html` (retail / editorial shop reference page)
-4. `Sample-page-Premium-minimal.html` (premium minimal / agency / portfolio reference page)
-
-The main playground demonstrates:
-- Design tokens via CSS custom properties (`--font-display`, `--font-body`, `--color-primary`, `--color-surface`, `--color-text`, `--radius`, `--space-unit`, `--shadow`).
-- Root-level data attributes controlling buttons (`pill`, `rounded`, `sharp`), cards, images (`aspect`, `corners`), density (`compact`, `comfortable`, `spacious`), alignment, motion, heading case, and light/dark mode.
-- Named presets including:
-  - *Warm clinic*
-  - *Quiet luxury*
-  - *Editorial mono*
-  - *Fresh green*
-  - *Corporate navy*
-  - *Warm restaurant*
-  - *Playful*
-  - *Dark premium*
-- Font pair configurations including:
-  - Inter + Inter
-  - Playfair Display + Inter
-  - Cormorant Garamond + Jost
-  - Poppins + Inter
-  - DM Serif Display + DM Sans
-  - Space Grotesk + Inter
-  - Fraunces + Work Sans
-  - Montserrat + Open Sans
-  - Figtree + Figtree
-- Reusable visual patterns for headers, heroes, services, pricing, testimonials, teams, galleries, FAQs, forms, product/catalogue displays, menus, courses, property listings, and footers.
-- Browser behavior patterns for interactive components such as tabs, carousels, mobile navigation drawers, overlays, and counters.
-- CSS helpers for grids, cards, buttons, surfaces, image containers, spacing rhythm, and responsive behavior.
-
-The supplied sample files use the `.bs` styling system and design variables. In the inspected sample markup, images are implemented with controlled styling and background placeholders rather than arbitrary unmanaged tags; this must not be mistaken for the final production asset storage pipeline. The sample pages also reference Google Fonts, while the production block library self-hosts fonts. The engine adheres to production policies rather than blindly copying third-party demo dependencies.
-
-### Integration decision
-
-**Reuse the library's visual vocabulary, design tokens, and approved component concepts; build an autonomous website-generation and composition pipeline rather than displaying a fixed template with text substitution or embedding the playground wholesale.**
-
-The library contains 98 pieces and 292 looks. Within the one-day vertical slice:
-1. Do not recreate all 98 pieces and 292 looks. Focus on the core manifest of 12 components.
-2. Build a machine-readable manifest of supported components.
-3. Map each component to a trusted React renderer.
-4. Map design presets and typography pairings to typed token objects.
-5. Reuse compatible CSS variables and utility classes in isolation, preventing leakages into builder UI chrome.
-6. Use reliable local assets or explicit placeholders for the demo.
-7. Record the source piece/preset name in metadata for traceability.
-8. Defer the remaining library pieces until they can be validated and integrated individually.
-
-### Component manifest (Selected for Vertical Slice)
-
-The vertical slice implements the 12 core component types:
-1. `site-header` — Responsive navigation bar, logo/brand name, nav links, and primary action button.
-2. `hero-split` — Split 2-column hero with headline, value proposition, CTA buttons, and feature media/badge.
-3. `hero-centered` — Focused centered hero with badge, high-impact headline, sub-headline, and dual CTAs.
-4. `service-grid` — Multi-column card grid showcasing offered services/products with icons, descriptions, and links.
-5. `feature-row` — Alternating zig-zag visual rows with narrative copy, supporting metrics, and imagery.
-6. `testimonial-list` — Customer social proof cards with quote, client attribution, rating, and avatar.
-7. `faq-accordion` — Interactive expandable accordion for common customer inquiries and objections.
-8. `gallery-grid` — Visual showcase gallery with responsive grid layout and media captioning.
-9. `call-to-action` — High-conversion banner with bold headline, reassurance text, and prominent conversion button.
-10. `contact-form` — Functional enquiry form with name, email, phone, message fields, validation, and demo feedback.
-11. `location-hours` — Business location details, service area description, operating hours table, and direct contact buttons.
-12. `site-footer` — Comprehensive site footer with brand overview, navigation links, hours summary, contact info, and copyright.
-
-*Deferred for post-vertical slice:* `pricing-grid`, `team-grid`, `product-grid`, `tabs`, `carousel`.
-
-Each manifest entry strictly defines:
-- `type` and `version`
-- category and description
-- supported Zod props schema
-- allowed action types (`internal-link`, `tel`, `mailto`, `whatsapp`, `external-link`, `contact-form`)
-- responsive behavior (mobile, tablet, desktop)
-- accessibility requirements (ARIA roles, keyboard navigation, contrast)
-- whether external assets or integrations are needed
-- provenance/source component from the 98-piece library
-
-**Business-aware component selection:** The engine must use collected business information (e.g., category, goals, products/services, hours) to select and sequence appropriate components, styling presets, and content structure intelligently rather than choosing randomly or using the exact same layout for every business.
-
-Never permit model output to provide raw HTML, JavaScript, arbitrary CSS, event handlers, or unvalidated URLs.
-
-------------------------------------------------------------------------
-
-## 5. Complete user information collection requirements
-
-The user intake is mandatory. It explicitly documents the information collected from the user before website generation using progressive disclosure.
-Fields are classified as **Required**, **Optional**, or **Conditional**. The user must be able to proceed without supplying optional or non-applicable fields.
-
-### A. Common business information
-
-The intake covers the following 20 pieces of business information:
-
-1. **Business type or category** *(Required)*: Primary industry classification (e.g., Healthcare, Restaurant, Agency, Portfolio, Retail, Education, Local Services). Drives conditional question disclosure, design preset selection, and component architecture.
-2. **Business name** *(Required)*: Exact legal or trading name displayed across branding, headers, metadata, and legal footers.
-3. **Business location and service area** *(Conditional/Required for local services, Optional for digital/global businesses)*: Physical street address, city, postcode, and geographical service radius/cities served.
-4. **Primary website goal** *(Required)*: Core conversion objective (e.g., direct calls, online enquiries, WhatsApp messages, external bookings/reservations, portfolio showcase, product catalogue). Determines primary CTA action type and placement.
-5. **Target audience or customers** *(Optional, default: "General public / Local clients")*: Description of ideal customers, demographics, and key problems solved. Guides tone of voice and narrative complexity.
-6. **Products or services offered** *(Required)*: At least one primary offering with names and descriptions. Populates service grid cards and navigation anchors.
-7. **Unique selling points (USPs) and differentiators** *(Optional)*: Key advantages (e.g., "15+ years experience", "Same-day appointments", "Licensed & Insured"). Informs feature row highlights and badge copy.
-8. **Preferred design style and visual direction** *(Optional, default: "Recommend for me")*: Visual preference (e.g., Warm clinic, Quiet luxury, Editorial mono, Fresh green, Corporate navy, Warm restaurant, Dark premium, Playful). Guides design preset token mapping.
-9. **Required website pages and sections** *(Optional, default: "Recommend for me")*: Specific requested pages (e.g., Home, About, Services, Contact, FAQ, Gallery). Informs sitemap generation.
-10. **Reference or inspiration website URL** *(Optional)*: URL of a website the user admires for structure, tone, or visual rhythm.
-11. **Preferred elements or styles from reference website** *(Optional)*: Specific notes on what to borrow (e.g., "clean typography", "grid layout", "card styling").
-12. **Existing logo and brand assets** *(Optional)*: Uploaded logo asset ID, image file, or brand mark. If absent, engine falls back to styled typography brand name.
-13. **Available business images and photos** *(Optional)*: High-resolution client photography. If not provided, fallback to verified curated demo/stock imagery with correct attribution.
-14. **Existing website URL** *(Optional)*: Current live website for factual background extraction or domain migration reference.
-15. **Business description and content** *(Optional)*: Extended narrative about the business history, mission, founder background, and ethos.
-16. **Contact information** *(Required)*: Primary phone, email, WhatsApp number, or address corresponding to the primary website goal.
-17. **Required functionality and integrations** *(Optional)*: Integration hooks (e.g., Google Maps link, external booking widget URL, Instagram feed link, PDF menu).
-18. **Testimonials, certifications, and approved business proof** *(Optional)*: Real client reviews, accreditation badges, industry awards. The engine never invents fake testimonials or reviews.
-19. **Social media links** *(Optional)*: URLs for Instagram, Facebook, LinkedIn, X, YouTube, TikTok. Populates social icons in header and footer.
-20. **Additional requirements and notes** *(Optional)*: Custom constraints, compliance notices, disclaimer text, or specific instructions.
-
-### B. Category-specific conditional information
-
-Displayed conditionally only when the corresponding business category is selected:
-
-1. **Restaurant**
-   - Cuisine type (e.g., Italian, Artisanal bakery, Pan-Asian).
-   - Menu highlights or URL.
-   - Operating hours (lunch, dinner, days open).
-   - Dietary accommodations (vegan, gluten-free, halal).
-   - Delivery platform links (UberEats, Deliveroo, DoorDash).
-   - Reservation links (OpenTable, Resy, SevenRooms).
-
-2. **Healthcare / Clinic**
-   - Specific treatments and procedures offered.
-   - Practitioner credentials, qualifications, and registration numbers.
-   - Accepted insurances or payment options.
-   - Patient contact and triage methods (emergency disclaimer, booking hotline).
-
-3. **Agency / B2B**
-   - Specialized service packages.
-   - Target industries and enterprise verticals.
-   - Portfolio project highlights and client logos.
-   - Case studies (challenge, solution, quantified outcome).
-
-4. **Portfolio / Creative**
-   - Featured projects and creative works.
-   - Creator role and discipline (e.g., Art Director, UI/UX Designer, Architect).
-   - Technical and creative skills.
-   - High-resolution project visual assets.
-
-5. **Retail / Catalogue**
-   - Product catalogue categories and collections.
-   - Featured products, descriptions, and SKU highlights.
-   - Pricing display preferences (show exact prices vs request quote).
-   - Product imagery slots and enquiry/order flows.
-
-6. **Education / Training**
-   - Subjects, programs, and courses offered.
-   - Target age groups and skill levels.
-   - Learning delivery format (in-person, hybrid, self-paced).
-   - Faculty credentials and curriculum highlights.
-
-7. **Local Services (Plumbing, Electrical, Cleaning, etc.)**
-   - Defined service areas and emergency radius.
-   - Emergency availability (24/7 vs standard business hours).
-   - Operating schedule.
-   - Specific service details, licensing, and insurance warranties.
-
-### C. How collected information is used by the generation pipeline
-
-- **Structured Content:** Direct business facts (name, phone, email, address, services, hours, USPs) are deterministically bound to component props. The AI model is strictly instructed never to fabricate reviews, team members, or medical claims.
-- **Section Selection & Architecture:** Primary goals and category data dictate section composition (e.g., a Restaurant automatically includes `location-hours` and reservation CTAs; a Clinic includes credential badges and treatment FAQs; an Agency prioritizes `feature-row` case studies and `service-grid`).
-- **Styling & Tokens:** Category and preferred style directly select the design preset (e.g., *Warm clinic* for healthcare, *Warm restaurant* for dining, *Quiet luxury* for upscale portfolio/retail).
-- **Reference Websites:** If a reference website URL is provided, the engine may inspect structural cues, color harmony, and typographic feel. It must **NEVER** copy copyright text, proprietary images, or private assets from reference sites.
-- **State Separation:** The normalized business profile is stored independently as `BusinessProfile` JSON and can be revised without destroying downstream customizations.
-
-------------------------------------------------------------------------
-
-## 6. Data contracts
-
-Use Zod or equivalent schemas. Keep types versioned and stable.
-
-### Business profile (conceptual)
-
-``` ts
-type BusinessProfile = {
-  schemaVersion: "1.0";
-  businessName: string;
-  businessType: string;
-  location?: string;
-  serviceArea?: string[];
-  audience?: string;
-  primaryGoal:
-    | "enquiries"
-    | "calls"
-    | "whatsapp"
-    | "bookings_external"
-    | "portfolio"
-    | "brand"
-    | "catalogue";
-  servicesOrProducts: Array<{
-    id: string;
-    name: string;
-    description?: string;
-    source: "user" | "verified_existing_site" | "ai_draft";
-  }>;
-  differentiators?: string[];
-  brand?: {
-    colors?: string[];
-    fontPreference?: string;
-    tone?: string;
-    logoAssetId?: string;
-  };
-  contact?: {
-    phone?: string;
-    email?: string;
-    whatsapp?: string;
-    address?: string;
-    website?: string;
-  };
-  reference?: {
-    url?: string;
-    analysisSummary?: string;
-    permissionConfirmed?: boolean;
-  };
-  assets: Array<{
-    id: string;
-    kind: "logo" | "photo" | "document";
-    source: "user" | "stock" | "demo";
-    attribution?: string;
-  }>;
-};
-```
-
-### Website document (conceptual)
-
-``` ts
-type WebsiteDocument = {
-  schemaVersion: "1.0";
-  projectId: string;
-  businessProfileId: string;
-  design: {
-    family: "editorial" | "local-service" | "modern" | "creative";
-    preset: string;
-    tokens: Record<string, string | number>;
-  };
-  pages: Array<{
-    id: string;
-    slug: string;
-    title: string;
-    purpose: string;
-    seo: {
-      title: string;
-      description: string;
-    };
-    sections: Array<{
-      id: string;
-      type: string;
-      version: number;
-      visible: boolean;
-      props: Record<string, unknown>;
-    }>;
-  }>;
-  createdAt: string;
-  updatedAt: string;
-  generation: {
-    model: string;
-    promptVersion: string;
-    estimatedCredits: number;
-    actualCredits?: number;
-  };
-};
-```
-
-This is a conceptual contract. The implementation must create strict
-per-component prop schemas; `Record<string, unknown>` is not a
-substitute for validating every section.
-
-### Required validation
-
--   Reject unknown `type` values.
--   Reject unknown/unsafe props.
--   Limit strings, arrays, number of pages, number of sections, and
-    total payload size.
--   Sanitize text and encode it through normal React rendering.
--   Permit only known action types such as `internal-link`, `tel`,
-    `mailto`, `whatsapp`, `external-link`, and `contact-form`.
--   Validate external URLs and restrict unsafe protocols.
--   Do not allow untrusted content to inject HTML or scripts.
--   Ensure each page and section has a stable unique ID.
--   Validate slugs and prevent collisions.
--   Validate that internal links target existing pages.
-
-------------------------------------------------------------------------
-
-## 7. Generation pipeline
-
-### Step 1 --- Normalize intake
-
-Validate the business profile and identify missing critical information.
-Ask follow-up questions only when the answer materially affects the
-website.
-
-### Step 2 --- Plan
-
-Generate a compact `SitePlan` with: - business summary - audience and
-primary goal - proposed sitemap - page purpose - ordered sections for
-each page - primary/secondary CTA - design family and rationale - assets
-required - missing facts or assumptions - unsupported capabilities
-
-Do not generate all page content before the plan is valid.
-
-### Step 3 --- Design selection
-
-Select an allowlisted design family and preset. Generate only permitted
-token overrides. Use design variation intentionally: section order, hero
-composition, image/text proportions, alignment, density, and background
-rhythm should vary based on the business and brief---not just the accent
-color.
-
-### Step 4 --- Content generation
-
-Generate structured content for each planned section. Use specific
-business information. Avoid generic repeated phrases, duplicated
-headings, fake reviews, fake statistics, invented prices, fake
-certifications, and fabricated team members.
-
-### Step 5 --- Build the document
-
-Merge the plan, design, content, and asset IDs into a `WebsiteDocument`.
-Validate it before rendering.
-
-### Step 6 --- Render
-
-Render only registered components. Use design tokens and responsive
-rules. All CTAs must resolve to an allowed action or be visibly marked
-as unavailable.
-
-### Step 7 --- QA
-
-Run deterministic schema and content checks, then browser smoke tests.
-Collect screenshots and console/network failures if available.
-
-### Step 8 --- Targeted repair
-
-If a test fails, repair only the failing page/section/property. Do not
-rerun the entire generation pipeline by default. Repair calls must use
-the same usage ledger and budget ceiling.
-
-### Step 9 --- Review and export
-
-Show the user the result, plan, and QA report. Export the structured
-document with a schema version. Do not publish to production domains
-from the prototype.
-
-------------------------------------------------------------------------
-
-## 8. Model selection and usage policy
-
-### Approved Model Hierarchy (Google Gemini API)
-
-The engine standardizes on Google Gemini models via `@google/genai` or standard REST API endpoints, enforcing a strict separation of concerns between high-level reasoning and structured payload generation:
-
-1. **Planning, IA, and Strategic Design: `gemini-3`**
-   - High-reasoning model responsible for synthesizing the raw business intake into the structured `SitePlan`.
-   - Generates page hierarchy, section selection, sequence, CTA strategy, color palette rationale, and preset token overrides.
-   - Operates with strict JSON schemas and bounded temperature (`0.2`).
-
-2. **Section Generation, Content Infilling, and Targeted Repair: `gemini-3.5-flash-lite`**
-   - High-throughput, ultra-cost-effective model responsible for generating detailed props for individual sections (headlines, feature copy, FAQ items).
-   - Handles localized section rewrites and schema repair tasks without depleting the credit budget.
-   - Enforces business-specific facts, zero hallucination of reviews, and token discipline.
-
-Vision inputs are reserved strictly for reference website screenshots or user brand asset inspection where available. No dedicated code-generation model is used, as the engine renders via a trusted React component registry.
-
-### Provider adapter
-
-All model calls must go through an internal, server-side interface:
-
-``` ts
-interface ModelProvider {
-  generateStructured<T>(input: {
-    task: "plan" | "section" | "repair";
-    input: unknown;
-    schemaName: string;
-    maxOutputTokens: number;
-  }): Promise<{
-    data: T;
-    usage?: { inputTokens?: number; outputTokens?: number };
-    model: string;
-  }>;
-}
-```
-
-Implement the provider with server-side credentials (`GEMINI_API_KEY`). Never expose keys to client-side bundles.
-
-### Complete Credit Policy and Business Rules
-
-The engine implements and documents the full credit economy:
-
-1. **Initial Build Cost:** An initial successful AI website build deducts exactly **250 credits** from that business's balance.
-2. **Starting Balance:** Every new business receives **1,000 starting credits** upon account onboarding.
-3. **AI Edit Pricing:** AI-assisted section rewrites or targeted changes cost **5 credits per change made** (e.g., 5 AI edits = 25 credits).
-4. **Free Manual Edits:** Direct user edits — including manual text edits, section reordering, show/hide toggles, styling controls, and image swaps — are completely **free (0 credits)**.
-5. **Zero-Charge Failure Rule:** If a generation, edit, or repair operation fails or is rejected by schema validation, **0 credits are charged**. The business is charged only if the build or edit succeeds end-to-end.
-6. **Plan Site Limits:** Tiered limits across plans:
-   - *Starter Plan:* Maximum of **1 site**.
-   - *Growth Plan:* Maximum of **2 sites**.
-   - *Pro Plan:* Maximum of **5 sites**.
-7. **Production Account Exceptions:**
-   - `The Eventful Cakes`: Configured with an unlimited-AI generation exception.
-   - `brandscalers@gmail.com`: Configured with a special 10-site allowance.
-8. **Billing & Refills:** Monthly plan credit rollovers are deferred; credit refills are processed manually or via administrative top-up.
-9. **Pre-flight Budget Guard:** The engine calculates estimated credit and token cost prior to invoking any model. If the business has fewer than 250 credits (or the estimated cost exceeds the remaining balance), the operation is blocked pre-flight before incurring provider API costs.
-10. **Ledger & Audit Trail:** Every operation logs task, model name, input/output tokens, internal credits deducted, provider cost, and timestamp to a persistent ledger. Internal credits are decoupled from external provider API dollar costs.
-
-------------------------------------------------------------------------
-
-## 9. Design quality and visual diversity
-
-### Requirements
-
--   At least three distinct design families in the demo.
--   At least two different hero compositions.
--   Multiple section backgrounds and spacing rhythms.
--   Distinct typography pairings.
--   Controlled variations in image shape, card style, button style,
-    density, and alignment.
--   Business-specific component selection.
--   Responsive behavior at mobile/tablet/desktop widths.
--   Consistent design tokens within one website.
--   No random style changes that break cohesion.
--   No repeated generic sections just to increase page length.
-
-### Design acceptance criteria
-
-For two meaningfully different business briefs, reviewers should see
-differences in: - information architecture - section selection and
-ordering - typography and composition - CTA placement and purpose -
-imagery - density and spacing - business-specific functionality
-
-Changing only the color or business name does not count as design
-diversity.
-
-------------------------------------------------------------------------
-
-## 10. Website editing requirements
-
-The website builder provides an integrated visual and structured editor operating on the `WebsiteDocument` state. Edits are deterministic and update the live preview in real time without triggering full regenerations.
-
-### Supported Editing Features
-1. **In-place Text Editing:** Direct modification of headlines, subheadings, badge text, body paragraphs, and button CTA text.
-2. **Component Property & Styling Controls:** Adjusting section-level alignment (left, center), visual density (compact, comfortable, spacious), surface backgrounds (default, subtle, brand-tint, dark), and border/radius styles.
-3. **Show / Hide Sections:** Granular visibility toggle on any page section without deleting its configured properties.
-4. **Section Reordering:** Moving sections up or down the page sequence to optimize narrative and conversion hierarchy.
-5. **Image Swapping:** Replacing any hero, feature, or gallery image with local assets, curated demo media, or approved image URLs with alt text.
-6. **AI-Assisted Targeted Editing:** AI-driven section copy polish or rewriting using `gemini-3.5-flash-lite` that returns only validated property changes for that targeted section ID.
-7. **Real-time Preview Synchronization:** All edits reflect immediately in the side-by-side desktop/mobile preview and revalidate against the component's Zod schema.
-
-### Editing Credit Rules
-- **Free Manual Edits:** All user manual edits (text typing, reordering, show/hide, styling property toggles, image swaps) cost **0 credits**.
-- **Credit-Incurring AI Edits:** AI-assisted section rewrites deduct **5 credits per accepted modification** (e.g., 5 AI edits = 25 credits).
-- **Failed Edits:** Any rejected or errored AI edit incurs **0 credits**.
-- **Honest Capability Boundaries:** The system does not claim "unlimited free AI editing" or unconstrained full-site redesign via chat.
-
-------------------------------------------------------------------------
-
-## 11. QA and monitoring agent specification
-
-The QA agent is independent from the builder. Its job is to detect
-whether the implementation matches this spec, not to make the
-implementation look successful.
-
-### Required QA checks
-
-**Static/schema** - TypeScript/build succeeds. - Every generated
-document passes schema validation. - Unknown components are rejected. -
-Invalid links and unsupported actions are rejected. - Duplicate
-page/section IDs and duplicate slugs are rejected. - Missing required
-page/CTA/contact configuration is reported.
-
-**Rendering** - Each supported component renders with minimal and full
-props. - No runtime exceptions. - No broken image references in the
-demo. - No horizontal overflow at 360px, 390px, 768px, and 1440px
-widths. - One H1 per page unless an explicit documented exception
-exists. - Buttons and links have accessible names. - Forms have labels
-and error/success states.
-
-**Functional** - Header navigation works. - Internal links reach the
-correct page. - Primary CTA has the expected action. - Contact form
-validates required fields. - Demo form submission gives truthful success
-feedback and is labeled as demo mode if not persisted. - Editing a
-section updates the preview. - Switching viewport changes the preview
-layout. - Budget cap blocks an over-budget generation. - Failed
-generation does not charge credits.
-
-**Visual** - Capture screenshots for each design family at desktop and
-mobile. - Compare the outputs against the accepted design intent. - Flag
-identical section sequences across unrelated briefs. - Flag excessive
-repeated card grids, generic filler, awkward text wrapping, poor
-contrast, empty image slots, and uneven spacing. - Visual judgments must
-be accompanied by screenshots and specific observations, not just a
-score.
-
-**Security** - No secrets in client bundles. - No arbitrary
-HTML/JavaScript from model output. - No unsafe URL protocols. - No
-cross-tenant access in any backend implementation. - No production data
-or production keys used in the prototype.
-
-### QA severity
-
--   **P0 / Blocker:** security exposure, data loss, production mutation,
-    uncontrolled credit spend.
--   **P1 / Critical:** app cannot run, generation fails, renderer
-    crashes, primary CTA/form/navigation broken.
--   **P2 / Major:** responsive defects, major visual mismatch, incorrect
-    business content, edit corrupts unrelated sections.
--   **P3 / Minor:** cosmetic issue with a safe workaround.
-
-The QA agent must report: - requirement ID - test performed - exact
-command or steps - observed result - expected result - severity -
-screenshot/log/evidence - reproducibility - pass/fail/block status
-
-------------------------------------------------------------------------
-
-## 12. Two-chat Antigravity workflow and manual testing journey
-
-To ensure complete rigor and prevent conflict of interest, the project defines two separate agent roles operating in separate Antigravity chats, bridged by an explicit user manual testing journey.
-
-### Explicit Execution Sequence
-1. **Phase 1 — Builder Agent Implementation:** The Builder Agent develops the engine, components, intake, renderer, Gemini provider, and automated tests, verifying passing test suites (24/24 tests) and starting the local server.
-2. **Phase 2 — User Interactive Journey & Verification:** Before handing the project over to the QA Agent, the user launches the application, tests the end-to-end journey personally, and validates real-world usability and responsiveness.
-3. **Phase 3 — Independent QA & Monitoring Agent:** The QA Agent assumes an adversarial, read-only inspection role to audit compliance against `spec.md`, run regression suites, verify budget caps, test edge cases, and output `QA-REPORT.md`.
-
-### Browser Preview and Local Testing Environment
-- **Localhost Execution:** Development server runs continuously at `http://localhost:3000`.
-- **Integrated Browser / Chrome:** The application is verified in Antigravity's integrated browser preview or desktop Google Chrome.
-- **Server Persistence:** The background server process remains running during user testing and QA evaluation.
-
-### Complete 10-Step User Testing Journey
-1. **Open the Website Builder:** Launch `http://localhost:3000` and verify application chrome, credit counter (1,000 credits), and empty state.
-2. **Enter Business Intake Details:** Fill out business name, category, location, primary goal, products/services, and conditional questions (e.g., healthcare treatments or restaurant cuisine).
-3. **Generate Website via Gemini API:** Trigger AI generation and observe progress indicators, model status (`gemini-3` planning -> `gemini-3.5-flash-lite` infilling), and credit balance deduction (250 credits deducted).
-4. **Inspect Generated Output:** Examine semantic structure, color harmony, typography pairings, authentic factual content (no fake reviews), and visual hierarchy.
-5. **Check Responsive Viewport Preview:** Toggle between Desktop (1440px), Tablet (768px), and Mobile (375px/390px) screen sizes without horizontal overflow.
-6. **Perform In-Place Manual Edits:** Modify headlines, change section surface styling (e.g., subtle to brand-tint), toggle section visibility, and reorder sections.
-7. **Verify Real-Time Preview Updates:** Confirm all edits update the live preview instantly and preserve unrelated sections.
-8. **Test Interactive Elements:** Click navigation anchor links, mobile hamburger drawer, FAQ accordion collapse/expand, and submit the contact form to verify truthful feedback.
-9. **Test a Second Business Category:** Generate a contrasting business (e.g., Restaurant vs Healthcare Clinic) to verify that the engine creates an entirely different layout, token set, and section composition.
-10. **Validate Error Handling & Budget Guard:** Test validation errors for missing required fields, simulation of over-budget scenarios, and non-charging failure behavior.
-
-### Chat A — Builder / Implementation Agent Responsibilities
-- Implement according to `spec.md`.
-- Maintain `DECISIONS.md` and `TEST-RESULTS.md`.
-- Do not mark tasks complete without running real verification commands.
-- Provide clear run instructions, environment configuration, and status summaries.
-
-### Chat B — QA / Testing / Monitoring Agent Responsibilities
-- Read-only inspection of implementation files and runtime logs.
-- Adversarial testing of schemas, responsive layouts, credit budget enforcement, and security boundaries.
-- Verification that mocked capabilities are truthfully labeled and not presented as production-ready.
-- Output comprehensive findings, issue severities (P0 to P3), and a final Go/No-Go verdict in `QA-REPORT.md`.
-
-------------------------------------------------------------------------
-
-## 13. One-day schedule and checkpoint gates
-
-The timeline is intentionally aggressive. Cut optional features rather
-than skipping quality gates.
-
-### First 30 minutes --- Environment and source audit
-
--   Confirm Node/package manager and available model credentials.
--   Inspect supplied library and sample files.
--   Confirm clean repository and project creation.
--   Write setup instructions and `.env.example`.
--   QA agent creates initial checklist.
-
-**Gate:** application can be bootstrapped; no production files or
-secrets are touched.
-
-### Next 60--90 minutes --- Schema and design foundation
-
--   Implement business profile, site plan, website document, component
-    manifest, design tokens, and budget guard.
--   Implement at least three design presets/families.
--   Add fixture data and schema tests.
-
-**Gate:** a fixed fixture passes validation and renders without AI.
-
-### Next 90 minutes --- Renderer and demo website
-
--   Implement header, two hero styles, service grid, feature row, FAQ,
-    CTA, contact form, footer.
--   Add multi-page navigation.
--   Add responsive styles and safe action handling.
--   Build one polished demo business.
-
-**Gate:** a complete fixture-based website works without any AI call.
-
-### Next 90 minutes --- AI pipeline
-
--   Implement the provider adapter.
--   Generate a site plan and structured page data.
--   Validate model output.
--   Add bounded retries and budget checks.
--   Keep a deterministic fixture fallback for the presentation if the
-    API is unavailable.
-
-**Gate:** AI-generated structured data can be rendered, or the fallback
-is clearly disclosed.
-
-### Next 60 minutes --- Editing and QA
-
--   Add section-level editing.
--   Add mobile preview.
--   Run schema, budget, rendering, and browser smoke tests.
--   Capture screenshots and fix critical issues.
-
-**Gate:** all P0/P1 defects fixed or clearly block the release.
-
-### Final 30--45 minutes --- Presentation rehearsal
-
--   Run the project from a clean start.
--   Verify `.env.example` and README.
--   Test the happy path twice.
--   Record screenshots and actual QA results.
--   Prepare a short demo script and known-limitations slide.
-
-**Gate:** the demo is repeatable and honest about what is mocked.
-
-If time runs short, preserve this order: 1. Working fixture-based
-renderer. 2. Three distinct design directions. 3. Structured generation
-with schema validation. 4. Budget enforcement. 5. Navigation and contact
-demo. 6. Responsive preview and section editing. 7. Automated QA. 8.
-Optional advanced components.
-
-Do not sacrifice the first seven priorities for animations, ecommerce,
-database persistence, or a large component count.
-
-------------------------------------------------------------------------
-
-## 14. Acceptance criteria
-
-### AC-01 --- Brief intake
-
-A valid business brief can be entered and normalized. Missing required
-fields show useful validation errors.
-
-### AC-02 --- Site planning
-
-A site plan contains page slugs, page purposes, section order, primary
-CTA, selected design family, and missing-information warnings.
-
-### AC-03 --- Schema safety
-
-Invalid model output is rejected and does not reach the renderer.
-
-### AC-04 --- Design diversity
-
-Three design families produce visibly different layouts and token
-combinations. Difference is not limited to color/name.
-
-### AC-05 --- Multi-page rendering
-
-At least Home, About, Services, and Contact render from structured data,
-with working navigation.
-
-### AC-06 --- Functional CTA
-
-The main CTA performs its declared allowed action or displays an honest
-demo/unsupported state.
-
-### AC-07 --- Contact form
-
-Required fields validate. Submission gives truthful feedback.
-Persistence is not claimed unless verified.
-
-### AC-08 --- Responsive preview
-
-The site is usable at 360px, 390px, 768px, and 1440px widths, with no
-critical horizontal overflow.
-
-### AC-09 --- Editing
-
-Editing one section changes that section without unexpectedly
-overwriting unrelated sections.
-
-### AC-10 --- Budget
-
-The generation controller refuses a request that would exceed 250
-credits before making the call. A failed generation is not charged.
-
-### AC-11 --- QA evidence
-
-The QA report includes actual test results and identifies anything not
-tested.
-
-### AC-12 --- Integration readiness
-
-The website document is versioned, serializable, and independent of the
-builder UI. An adapter contract is documented for the existing Website
-Studio.
-
-### AC-13 --- Demo integrity
-
-Mocked functionality and local/demo-only integrations are explicitly
-labeled. No unsupported production claims are made.
-
-------------------------------------------------------------------------
-
-## 15. Production Website Studio integration contract
-
-Website Builder 2.0 is developed as an isolated vertical slice and must remain strictly decoupled from the live production Website Studio. It makes zero changes to production databases, storage buckets, user sessions, or deployment workflows.
-
-When scheduled for production integration, the engine will interface with the existing platform through a formal, versioned contract across 13 core production subsystems:
-
-1. **Supabase `websites` Table Schema Mapping:** Mapping legacy draft/published 4-layout columns to the versioned `WebsiteDocument` JSON schema.
-2. **Multi-Tenant Row-Level Security (RLS) & Ownership:** Enforcing strict `business_id` and `tenant_id` boundaries on all document reads and mutations.
-3. **Supabase Storage Asset Pipeline:** Interfacing with production storage buckets for user brand uploads, logo processing, and asset attribution metadata.
-4. **Credit Ledger & Billing Service:** Connecting generation and edit events to the production credit deduction RPC, handling starting balances (1,000 credits), refill hooks, and pre-flight balance checks.
-5. **Special Account Exception Rules:** Respecting production rules in code/database (e.g., `The Eventful Cakes` unlimited-AI generation, `brandscalers@gmail.com` 10-site allowance).
-6. **Plan Tier Enforcement:** Validating site creation limits according to subscription tiers (Starter: 1 site, Growth: 2 sites, Pro: 5 sites).
-7. **Production Enquiry Form API:** Routing form submissions from the generated `contact-form` to the production lead capture webhook, CRM integration, and notification service.
-8. **Subpath & Custom Domain Routing:** Integrating with production routing for vanity subpaths (`/sites/:slug`) and custom domain mapping on Vercel.
-9. **SEO, Meta Tags & Analytics Pipeline:** Exposing OpenGraph tags, JSON-LD structured data, sitemap generation, and GA4 / Google Tag Manager integration hooks.
-10. **Version History & Document Restore:** Supporting snapshots, revision rollbacks, and diff comparisons via the structured `WebsiteDocument` format.
-11. **Production Gemini & AI Provider Infrastructure:** Transitioning from standalone API keys to enterprise secret managers and centralized model proxy gateways.
-12. **Block Library Font Self-Hosting:** Aligning with the production design library policy of self-hosted typography rather than direct Google Fonts CDN runtime calls.
-13. **Feature-Flagged Phased Rollout:** Enabling side-by-side Canary deployment where the new engine powers select business categories while legacy layouts remain available.
-
-------------------------------------------------------------------------
-
-## 16. Final report template
-
-At the end of the day, the builder and QA agent must produce a combined
-report:
-
-``` text
-PROJECT:
-Commit/hash:
-Local run command:
-Demo URL or local URL:
-
-IMPLEMENTED:
-- ...
-
-TESTED:
-- Test:
-- Command:
-- Result:
-- Evidence:
-
-FAILED / BLOCKED:
-- ...
-
-MOCKED:
-- ...
-
-NOT PRODUCTION READY:
-- ...
-
-CREDIT BUDGET:
-- Hard cap:
-- Estimated usage:
-- Actual usage if available:
-- Over-budget test result:
-
-INTEGRATION:
-- Adapter available:
-- Schema version:
-- Production changes made: NO
-
-GO / NO-GO:
-- ...
-```
-
-------------------------------------------------------------------------
-
-## 17. Final engineering principles
-
-1.  Do not equate a large component count with high-quality websites.
-2.  Do not equate successful JSON generation with a successful website.
-3.  Do not equate a responsive screenshot with responsive behavior.
-4.  Do not equate a button being visible with the action working.
-5.  Do not use AI to do work that deterministic code can do more
-    reliably.
-6.  Do not regenerate the whole site to fix one section.
-7.  Do not allow a failed test to be hidden by the builder agent.
-8.  Do not charge a customer for an unsuccessful build.
-9.  Do not let the prototype mutate production data.
-10. Reuse the existing design library where it is validated, and extend
-    it through a manifest rather than rewriting it.
-11. Keep the engine's structured website document as the source of
-    truth.
-12. Optimize for customer acceptance, functional correctness, design
-    diversity, and cost per successful site---not generation speed
-    alone.
-
-**Final instruction:** Start with the audit and fixture-based renderer.
-Get a complete website working without AI first. Then connect the AI
-planner and structured generator. This ensures that if model generation
-fails or the credit limit is reached, the core rendering system still
-works and the next-day presentation remains reliable.
+# Website Studio 2.0 — Existing-Project Evolution Specification
+
+**Repository:** https://github.com/vuppalakomalnath-arch/website-studio-of-Brandscalers  
+**Purpose:** Single source of truth for the next implementation phase.  
+**Hard constraint:** Continue the existing Website Studio 2.0 repository and application. Do not scaffold a new project, create a parallel builder, or replace working code without a verified migration.
+
+## 0. Mandatory rules
+
+1. Read this entire file and inspect the current `README.md`, `spec.md`, `spec (1).md`, `DECISIONS.md`, `PROJECT-REPORT.md`, `QA-REPORT.md`, `TEST-RESULTS.md`, `package.json`, `.env.example`, source files and tests before changing code.
+2. Treat this as the governing specification for the next phase. Map each requirement to existing files and tests before implementation. Do not assume file paths or trust historical reports as proof of the current working tree.
+3. Continue inside this repository. Do not create a new Next.js project, repository, replacement application, or parallel Website Studio.
+4. Preserve the current Next.js + TypeScript + React architecture, Zod schemas, generation engine, BrandScalers design library, component manifest, renderers, editor, responsive preview, QA, fixtures and tests wherever they already meet the requirements.
+5. Keep production customer data, production databases, credentials, API keys, billing, published websites and customer workflows safe. Do not make destructive migrations or production changes without explicit approval, a verified integration contract and rollback plan.
+6. Never copy secrets or production data into source control, fixtures, prompts, client code, exports or logs. API keys must remain server-side.
+7. The model may return structured data only. Never trust it to produce executable React, HTML, JavaScript, CSS, SQL, event handlers, arbitrary URLs or unsupported components.
+8. Never invent business facts, reviews, testimonials, credentials, certifications, awards, addresses, hours, prices, customer logos or quantified outcomes. Use verified/user-provided content; mark demo fixtures and placeholders clearly.
+9. Do not weaken/delete tests, suppress console errors, or claim a test passed unless it was actually run and observed.
+10. Failed builds and failed AI edits must cost zero business credits. Accounting must be server-side, transactional and idempotent.
+11. Mark every mocked/simulated integration clearly. Never claim simulated publish, email, booking, payment, enquiry delivery, domain or analytics events are real.
+12. Make small changes, retain a working checkpoint, and run tests after each logical phase. Record important architecture/scope decisions in `DECISIONS.md`.
+13. Avoid adding a queue, vector database, agent framework, microservice or second backend without a demonstrated requirement.
+14. Final handoff must list files changed, tests and results, measured model usage/cost, mocked capabilities, known defects and production blockers.
+
+## 1. Goal
+
+Improve the existing Website Studio 2.0 so users provide only a few initial business details, receive relevant adaptive questions, review a business-specific website plan, generate a visually distinctive multi-page website, edit it safely, run QA and continue through the existing publishing workflow.
+
+The current pain points are too many generic questions, irrelevant questions for the business type, generic/static-looking layouts and cost concerns. Success means better business-specific results with fewer unnecessary questions and model calls—not “more AI.”
+
+## 2. Repository baseline and preflight audit
+
+The public repository documents an existing Next.js/React + TypeScript application with Zod schemas, planning/generation endpoints, a structured website document, a BrandScalers design library, component renderers, editing, responsive preview, QA and a 250-business-credit generation ceiling. Its current `package.json` lists Google Gemini SDK dependencies. Repository reports are historical evidence; verify the current checked-out code before acting.
+
+Inspect and document:
+- actual app entry points and route handlers (including `/api/plan` and `/api/generate` if present);
+- source modules for business profile, site plan, website document, provider, prompts, budget, renderer, assets, editor, QA and export;
+- current inference/category rules and question flow;
+- current BrandScalers CSS, tokens, presets, manifest and component registry;
+- tests, fixtures, known QA defects and current command scripts;
+- current provider/model/fallback, token usage, credit ledger and failure handling;
+- real production contracts for auth, Supabase, storage, publishing, versions, domains, enquiries and analytics, if accessible.
+
+Create a requirement-to-file map and baseline test report before changing code. Do not assume the isolated demo has production access. Do not create `spec (2).md`, `spec-new.md` or another duplicate specification; maintain one canonical `spec.md`.
+
+## 3. Architecture principles
+
+**AI interprets and plans; deterministic code validates, renders and controls money.**
+
+`Existing login/session → minimal intake → local inference → adaptive questions → confirmed profile → site plan → design selection → structured document/content → schema validation → trusted renderer → preview/editor → QA → approval → existing publishing adapter`
+
+- Continue the current Next.js, TypeScript, React and Zod stack.
+- Reuse the current engine, schemas, design library, manifest, renderer, editor, fixtures and tests.
+- Keep model provider access behind a typed server-side adapter.
+- Keep deterministic/fixture mode working without an API key; tests must not require paid calls.
+- No raw model-generated executable website code.
+- Do not add a new backend/database unless inspection proves it necessary.
+
+## 4. Preserve the existing Google/Gemini provider
+
+**Do not migrate from Google/Gemini to OpenAI.** The owner has explicitly chosen to keep the existing Google model provider. Continue development using the repository's current Google/Gemini SDK, provider abstraction, configured model and existing environment-variable conventions.
+
+1. Audit the current Google/Gemini provider, model configuration, prompts, routes, usage accounting and tests before changing anything.
+2. Keep the existing Google/Gemini provider as the live provider. Do not add OpenAI SDK dependencies, `OPENAI_API_KEY`, `OPENAI_MODEL`, or an OpenAI migration path as part of this work.
+3. Do not change the current model name or provider configuration unless a separate, explicitly approved decision requires it.
+4. Use the provider's currently supported structured-output/JSON-schema capability where compatible with the configured model; validate every model response again with Zod and known enum/manifest allowlists.
+5. Add or preserve timeouts, bounded retries, maximum output tokens, safe error mapping and usage telemetry using the existing provider integration.
+6. Keep fixtures/no-key mode working. Unit tests must not make paid API calls.
+7. Do not remove or replace Google/Gemini dependencies or provider code. Refactor the provider abstraction only if needed to support the adaptive architecture while retaining Google as the active provider.
+8. Keep credentials server-side and use the repository's existing Google/Gemini environment variable names. Never expose API keys, raw sensitive provider errors, unnecessary personal data or full prompt/response payloads to the browser/logs.
+9. Verify current official Google/Gemini model capabilities and pricing when implementing cost calculations; do not hard-code historical prices or assume an example rate is current.
+
+## 5. Complete user flow
+
+### Stage 0 — Login and existing account context
+Use existing Website Studio authentication; do not introduce a second login. Local demo mode may use fixtures but must be labelled. Load business and credit balance via trusted server logic. Never trust a browser-supplied balance. Opening the builder must not trigger generation.
+
+### Stage 1 — Minimal business details
+Ask only:
+1. Business name (required).
+2. Business category (required, including “Not sure / Recommend for me”).
+3. What the business offers (required short free-text description).
+
+Examples:
+- `Lakshmi Dental Clinic` / Healthcare / dental checkups, braces and root canal treatment.
+- `Mango & Mint` / Not sure / cafe serving coffee, pastries and brunch.
+- `Studio Anu` / Not sure / wedding photography and pre-wedding films.
+- `Northstar` / Not sure / bookkeeping and tax preparation for small businesses.
+
+Category is a prior, not the final answer. Combine category, name and offer. If they conflict, use confidence-aware inference or one concise clarification. Do not ask the same thing twice.
+
+### Stage 2 — Local inference (zero model calls in the normal path)
+Implement a pure TypeScript rules engine. It must make no network/API calls.
+
+Supported archetypes at minimum:
+- ecommerce/product retail;
+- product catalogue/local retail without checkout;
+- local service;
+- professional/B2B/agency;
+- portfolio/creator;
+- restaurant/cafe/food;
+- healthcare/clinic;
+- education/course/tutor;
+- event/venue;
+- hospitality/accommodation;
+- nonprofit/community;
+- personal brand;
+- general lead-generation/informational;
+- mixed/other.
+
+The typed `BusinessInference` result should contain: schema version, primary/secondary archetype, confidence band, likely goal, customer journey, candidate pages, required capabilities, missing high-impact information, contradictions, recommended question IDs, source (`rules`, `ai_fallback`, `user_confirmed`) and rules version.
+
+Use transparent rules and tests; avoid a large pile of business-name-specific hacks. A user must be able to correct the inferred archetype.
+
+**Critical:** a clinic, consultant, portfolio, restaurant or other non-retail business must not be asked “Do you want to sell products?” unless their description suggests product sales.
+
+### Stage 3 — Google/Gemini ambiguity fallback (exceptional)
+Call the existing Google/Gemini model only when:
+- local confidence is low or signals conflict; and
+- ambiguity can change the sitemap, primary customer journey or required functionality; and
+- a short user clarification is not preferable.
+
+Do not call AI to render a question, branch a UI, restate a known category or do a deterministic operation.
+
+Send only minimum necessary data: name, category, offer description and supported enum options. Do not send contact details, account IDs, uploaded files or unnecessary personal data.
+
+Require strict structured output with primary/secondary archetypes, confidence, goal, journey, candidate pages, required capabilities, ambiguities, recommended question IDs and reason codes. Zod-validate it; reject unknown enum values, unsupported question IDs, invalid confidence, unexpected actions and malformed results.
+
+On timeout, provider failure, invalid JSON/schema or budget limit, fall back to local inference and ask one clear clarification. Do not retry indefinitely. Cache only validated results where safe, using normalized input + schema/rules version and strict tenant/privacy boundaries. Allow user correction.
+
+### Stage 4 — Adaptive follow-up questions
+The question engine must be deterministic. Selecting an answer updates state and re-evaluates rules; it must not trigger a model call. Each question definition needs a stable ID, label, input type/options, applicability conditions, required/optional status, why it is needed, affected plan fields, validation, default/skip behavior and an AI-call policy defaulting to `never`.
+
+Ask only what is missing and materially affects structure or functionality. Common fields, only when not already known:
+- main goal;
+- audience;
+- location/service area when relevant;
+- primary CTA/contact channel;
+- tone/style or “Recommend for me”;
+- existing logo/photos/brand assets;
+- reference/existing website (optional);
+- requested pages (optional);
+- non-negotiable constraints.
+
+Conditional questions:
+
+**Ecommerce / retail**
+- Website catalogue, online checkout, physical store, WhatsApp/social sales, or a combination.
+- Product categories and approximate catalogue size.
+- Shipping, pickup/delivery and checkout provider only if applicable.
+- Inventory/import requirements only when needed.
+Never claim payment, checkout, inventory or shipping functionality works without a real verified integration.
+
+**Catalogue/local shop**
+- Visit store, call, WhatsApp, external order or online purchase as primary action.
+- Location/hours and product/category highlights if relevant.
+- Show prices only when provided/approved.
+
+**Services**
+- Primary services and service area.
+- Booking link, quote form, phone, WhatsApp or general enquiry.
+- Existing external booking provider, if any.
+- Do not invent availability or business hours.
+
+**Professional/B2B/agency**
+- Main services, target industries, desired conversion.
+- Approved case studies, real portfolio, verified outcomes and client logos only if supplied.
+
+**Portfolio/creator**
+- Work categories, featured projects, audience and CTA (enquiry, call, résumé, view work or social links). Do not show checkout questions unless selling is indicated.
+
+**Restaurant/cafe**
+- Menu URL/file, cuisine/menu highlights, location/hours if provided.
+- Visit, reservation, takeaway, delivery or external ordering.
+- Dietary options only if supplied. Reservation/ordering is real only if integrated.
+
+**Healthcare/clinic**
+- Treatments, location/service area, contact method, appointment method and existing external booking link.
+- Credentials only when verified and supplied.
+- Never collect patient medical data for the website intake; no diagnostic or emergency-triage claims.
+
+**Education**
+- Subjects/courses, target audience, delivery mode, and enquiry/trial/application/course catalogue goal.
+- Registration/payment only when actually supported and requested.
+
+**Event/venue/hospitality**
+- Type, location, primary CTA and dates/availability only if relevant.
+- Use verified external booking links unless a real booking integration exists.
+
+**Nonprofit/community**
+- Mission, programs, volunteer/donation/contact goal.
+- Donations are real only with verified payment integration; otherwise link externally.
+
+**Mixed/unclear**
+Ask one concise disambiguating question, e.g. “Do customers mainly book your service or buy products from you?” Never show all category questions at once.
+
+**Recommend for me**
+Recommend pages and sections from the confirmed business profile, audience, goal and available assets. Include About, Testimonials/Reviews and FAQ when useful and factually supported. Never invent reviews, awards, company history, policies or credentials. If testimonials are unavailable, omit the section or use a clearly marked draft placeholder that must be replaced/removed before publishing. Users can add/remove recommended pages and sections.
+
+A new AI call is allowed only if new free text creates a genuinely new ambiguity that could alter the architecture. This should be exceptional, bounded and visible in telemetry.
+
+### Stage 5 — Plan review before generation
+Show a concise editable summary:
+- inferred business type and confidence;
+- audience and customer problem;
+- primary goal/CTA and customer journey;
+- recommended sitemap and section order;
+- required functionality/integrations;
+- selected design direction and rationale;
+- assumptions, missing facts and placeholders;
+- estimated API usage/cost status and credit impact under existing policy.
+
+Let users correct type, goal, pages, CTA, style and answers. Do not start expensive generation until the plan is confirmed.
+
+Page candidates may include Home, About/Story, Services/Offerings, Product catalogue/detail, Menu, Portfolio/Projects/Case studies, Courses/Programs, FAQ, verified Testimonials/Reviews, Gallery, Contact/Location, booking/enquiry landing pages, and required legal/privacy pages. Do not force every page on every business or create empty/duplicate pages.
+
+### Stage 6 — Design and generation
+Use existing BrandScalers design library, CSS tokens, presets, manifest and renderers. Do not replace the library with a generic theme system.
+
+Vary actual composition, section order, visual hierarchy, typography, spacing, image treatment and approved component variants—not only accent colours. Use stable page/section IDs and the existing structured document schema. Resolve assets through existing asset resolver or approved user/stock assets with source metadata. Use reference sites only for high-level inspiration; do not copy their text or assets.
+
+Every page needs meaningful metadata, internal links, clear primary CTA and sensible headings. Only use allowlisted component types and design tokens. Reject arbitrary CSS, raw HTML, scripts, event handlers, unsafe URLs, unsupported actions and unknown component names. Draft placeholders must be marked and not silently published.
+
+### Stage 7 — Preview and editor
+Retain and extend the existing editor/preview. Support desktop/tablet/mobile at 1440, 768, 390 and 360px. The selected preview width must actually constrain the preview frame; changing a label alone is insufficient.
+
+Support real internal navigation and section-level editing of supported text, visibility, order if implemented, image and approved style tokens. Preserve stable IDs and untouched sections. Local deterministic edits must not call AI. AI edits must patch only the requested section/page, validate the patch and show the resulting preview. Do not regenerate the whole site for a local change. Keep undo/version history where available.
+
+On edit failure, preserve the previous valid version and charge zero credits. Follow existing billing: successful AI edit = 5 credits/change unless the verified production contract says otherwise; failed AI edit = 0. Local non-AI edits must not accidentally incur AI charges.
+
+### Stage 8 — QA and publish readiness
+Run deterministic QA on the exact document/version proposed for publishing.
+
+Minimum checks:
+- schema/version, allowlisted components/actions/properties;
+- required pages and sensible navigation;
+- internal link targets, primary CTA and forms;
+- no placeholders/demo content on production publish unless explicitly approved;
+- no invented proof, credentials, pricing or business claims;
+- one primary H1 per page and sensible heading hierarchy;
+- image source metadata and alt text;
+- responsive overflow at all four widths;
+- keyboard use, focus visibility, labels, accessible names and contrast where automatable;
+- form validation and truthful success/error state;
+- console errors and failed assets;
+- broken links and unsupported external actions;
+- title/description and basic SEO;
+- unsafe URLs, injected markup/scripts, secrets and unsafe embeds;
+- usage ledger and budget correctness;
+- real integration status and publish prerequisites.
+
+Classify issues as Blocker, Warning or Info. Critical security/schema/data-leakage/core-journey/unverified-claim failures block publishing. Warnings are shown to the user with remediation. Never show a passed check that did not run. Rerun affected checks after edits.
+
+### Stage 9 — Existing publish workflow
+Before implementation, locate and document actual contracts for the production `websites` records (draft/published/version/history/edit/domain state), Supabase Storage including `website-stock`, existing publishing/BrandScalers URL/custom-domain handling, enquiries, analytics, auth/tenant isolation and credit accounting. Do not guess table columns or make direct production schema changes based on this spec.
+
+Publish sequence:
+1. User requests publish.
+2. Run QA on the exact candidate version.
+3. Block on critical issues and explain warnings.
+4. Ask for explicit confirmation.
+5. Recheck ownership, permissions, business balance and document version server-side.
+6. Save an immutable/versioned snapshot using existing mechanisms.
+7. Invoke existing publication adapter.
+8. Report success only after the real publishing service confirms it.
+9. Show actual URL/domain and status.
+10. On failure, preserve last published version and draft, then show a recoverable error.
+
+Custom domains, DNS/SSL, checkout/payments, booking, email, analytics and Search Console are real only if existing production integration verifies them. Otherwise display “not connected” or “demo only”; never fake success.
+
+### Stage 10 — Returning user
+Resume drafts and existing profiles without repeating intake. Preserve saved answers, versions, live published site, enquiries, analytics and domains. Editing a live site must create/review a draft and not silently overwrite live content. Reopening the editor must not duplicate a site or deduct credits. Respect existing deletion, retention and tenant-isolation rules.
+
+## 6. Cost-efficient model-call policy
+
+**Adaptive questions must not mean one model call per question.**
+
+Expected normal flow:
+- Initial details: zero calls.
+- Local inference: zero calls.
+- Adaptive question display/answers: zero calls.
+- Ambiguous inference: zero or one short fallback call.
+- Plan generation: one bounded structured-output call where practical.
+- Website content: batch related fields where quality, context size and validation permit.
+- Local edits: zero calls.
+- AI edit: one targeted call.
+- QA: deterministic code, zero calls by default.
+- Publish: zero calls.
+
+Separate planning/content calls if measurements show better total cost, quality or reliability. Never repeat full generation to change one section. Limit retries; no unbounded agent loops.
+
+### API-cost telemetry
+Record model/provider, purpose, input/output tokens, actual or estimated USD cost, latency, retries, outcome, cache hit/miss and correlation ID. Do not log secrets or unnecessary business/personal content. Clearly mark estimated values where exact usage is unavailable.
+
+Measure:
+- calls per successful build by stage;
+- input/output tokens and API cost;
+- failure/retry rate;
+- time to first preview and total generation time;
+- business credits charged;
+- percent of intakes completed without AI fallback;
+- percent of users correcting inference;
+- schema repair frequency and targeted-edit success rate.
+
+**Acceptance target:** a clearly described ordinary business completes adaptive questions with zero Google/Gemini calls; low-confidence cases make at most one classification fallback call. Keep limits configurable and tested.
+
+### Keep provider dollars separate from business credits
+Provider API cost (USD) is a usage metric; business credits are the existing customer-facing billing unit. Never assume 250 credits equals a particular dollar amount.
+
+Preserve the existing production contract unless the owner explicitly approves a change:
+- 250 credits per successful website build;
+- 5 credits per successful AI edit/change;
+- failed builds and failed AI edits cost 0;
+- 1,000 credits for new accounts if still the verified current entitlement;
+- manual refill and current balance workflow remain unchanged.
+
+Inspect the real production credit service before coding. If it differs, document the discrepancy; do not silently rewrite billing.
+
+Enforce preflight budget, server-side balance checks, idempotency keys, transactional deduction on the existing definition of success, duplicate/concurrent request protection and safe rollback/refund if a reservation was made. Ledger entries should connect operation ID, business/tenant, model, tokens, cost estimate, credits, status and timestamp. Browser-supplied balance/cost is never authoritative.
+
+## 7. Data contracts
+
+Extend existing Zod schemas instead of creating duplicate incompatible schemas. Preserve backward compatibility with existing saved documents; version schema changes.
+
+`BusinessInference`: schema version, archetypes, confidence, goal, journey, candidate pages, required capabilities, missing information, contradictions, question IDs, inference source and rules version.
+
+`AdaptiveQuestion`: stable ID, label, explanation, type/options, conditions, required/optional, default/skip policy, affected plan fields, validation and `aiCallPolicy` defaulting to `never`.
+
+`ConfirmedBusinessProfile`: normalized identity/category, description/offers, user-confirmed archetype, audience, location/service area when relevant, goal/CTA/contact channel, approved proof/assets, answers, unknowns/assumptions and required consent flags.
+
+`SitePlan`: versioned sitemap, page objectives, audience, section order, component choices, CTA strategy, design family/preset/token IDs, asset needs, integration requirements/status, factual content requirements, missing-data warnings and budget estimate.
+
+`WebsiteDocument`: continue the existing versioned document; stable page/section IDs; allowlisted components and structured props only. It must not store model-generated executable source as the canonical site.
+
+`UsageRecord`: idempotency/operation ID, business/tenant reference according to existing conventions, operation type, provider/model, tokens, cost basis and amount, credits reserved/charged/refunded, status, safe reason code, timestamp and correlation ID. Avoid unnecessary personal data.
+
+## 8. Security, privacy and reliability
+
+- Google/Gemini calls remain server-side only; validate every inbound request and model response.
+- Enforce existing authentication, authorization, ownership and tenant isolation.
+- Do not trust browser-supplied IDs, balances, costs, publish permission, URLs or operation status.
+- Apply request size limits, rate limits, timeouts, bounded retries and abuse protection to expensive endpoints.
+- Treat business descriptions, uploaded files, reference-site text and model output as untrusted; prompt injection must not override policy or enable code execution.
+- Allowlist URL protocols/actions; reject `javascript:`, unsafe data URLs, unknown embeds and arbitrary scripts.
+- Use React text rendering rather than raw HTML wherever possible; validate/sanitize any allowed URL.
+- Never store API keys in website documents, exports, client logs or published HTML.
+- Do not send patient, payment, authentication or unnecessary personal data to the model.
+- Use least privilege for database/storage; retain existing server-side data access.
+- A failure must preserve the last valid draft and published version.
+- Never retry non-idempotent credit/publish operations without checking operation state.
+
+## 9. Test requirements
+
+Add to the existing suite; do not replace it.
+
+### Inference/question tests
+- Clinic does not see product-sale questions.
+- Portfolio asks about work and CTA, not checkout.
+- Restaurant asks about menu and visit/reservation/order only as relevant.
+- Retail distinguishes catalogue, store, WhatsApp and online checkout.
+- Service distinguishes booking link, quote, phone, WhatsApp and enquiry.
+- “Not sure” is inferred where possible.
+- Conflicting signals trigger safe clarification/fallback.
+- High-confidence local inference performs zero network/model calls.
+- Selecting any ordinary answer does not call the Google/Gemini model.
+- Unknown model question IDs are rejected.
+- User can override inference; subsequent flow follows override.
+- Back navigation preserves answers.
+
+### Provider/budget tests
+- No Google/Gemini API key still supports deterministic fixtures.
+- API key is absent from browser bundles and responses.
+- Structured outputs are validated with Zod.
+- Invalid outputs, timeout, rate limit and provider failures fall back safely.
+- Retries/calls are bounded.
+- Usage telemetry contains no secrets or unnecessary raw payloads.
+- Budget blocks requests before dispatch.
+- Failed build/edit charges zero.
+- Duplicate/concurrent requests cannot double-charge.
+- API dollars and customer credits remain separate.
+
+### Website/editor/QA/publish tests
+- Archetypes get appropriate page plans and CTA strategies.
+- Composition is business-aware, not random or the same template with different text.
+- About/testimonial/FAQ content is factually safe.
+- Raw HTML, arbitrary CSS, unsafe URLs and unsupported components are rejected.
+- Real internal navigation and CTA actions work.
+- Preview width actually changes the rendered viewport.
+- Editing one section preserves all unrelated section data.
+- Failed edit preserves prior document and charges zero.
+- Local edits make no model calls.
+- Critical QA issues block publishing.
+- Mock publish is clearly labelled.
+- Real publish is confirmed only by the actual adapter.
+- Publish failure preserves last published version.
+- Existing auth, credits, domains, enquiries, analytics, storage and history regressions are checked.
+
+Run the actual scripts defined in the repository, at minimum where available:
+- `npm test`
+- `npx tsc --noEmit`
+- `npm run build`
+- existing API/HTTP smoke tests
+- browser/E2E tests for the complete happy path and conditional archetypes.
+
+Record exact commands and observed outcomes. Mark unrun tests as “not run” and explain why.
+
+## 10. Implementation sequence
+
+**Phase 1 — Audit:** inspect source/docs; run baseline tests/type-check/build/smoke tests; map requirements to files; record current failures and real production integration contracts.
+
+**Phase 2 — Inference/questions:** add pure deterministic inference and question catalogue; wire into existing UI; test archetypes and prove normal flow makes no model calls.
+
+**Phase 3 — Google/Gemini provider hardening:** retain the current provider and model configuration; add/verify structured outputs, validation, telemetry, timeouts, bounded retries and fallback; keep fixture mode. Do not migrate providers.
+
+**Phase 4 — Plan/composition:** connect inference to editable sitemap, journey, sections, design presets and BrandScalers renderer; add regression tests.
+
+**Phase 5 — Editing/QA/accounting:** ensure targeted patches and zero-call local edits; preserve credit contract/idempotency; fix responsive preview and accessibility defects; expand QA.
+
+**Phase 6 — Production publishing:** integrate only through verified existing adapters, auth and feature flags; preserve versions, domains, enquiries, analytics and billing. If unavailable, keep clearly unconnected rather than faking it.
+
+**Phase 7 — Independent verification:** test all branches, model call counts, cost telemetry, credits and failure recovery; update reports with evidence and known limitations.
+
+## 11. Definition of done
+
+The phase is done only when:
+1. Changes are inside the existing repository/application; no parallel project exists.
+2. The intake starts with business name, category and offer description.
+3. Common cases use deterministic inference with no model call.
+4. Follow-up questions are relevant; unrelated category questions are not shown.
+5. “Recommend for me” is business-aware and editable.
+6. Users can correct inference and review the plan before generation.
+7. Google/Gemini calls are server-side, structured, validated, bounded and observable.
+8. Adaptive question display/answer selection makes no model calls.
+9. Generation uses existing schemas, BrandScalers assets/tokens/manifest and trusted renderer.
+10. Targeted edits do not regenerate unrelated sections.
+11. API cost is tracked separately from business credits.
+12. Existing billing and production workflows are preserved.
+13. QA is honest, evidence-based and blocks critical publish defects.
+14. Publishing uses a verified existing adapter and preserves the prior live version on failure.
+15. Existing and new tests, type-check and build pass—or failures are explicitly documented.
+16. Every mock is clearly identified; no false production-success claims exist.
+17. Handoff lists exact changed files, test evidence, measured API call counts/cost, risks and next steps.
+
+## 12. Required completion report
+
+- **Implemented:** requirements completed.
+- **Files changed:** exact paths and purpose.
+- **User flow:** tested steps and archetypes.
+- **AI usage:** Google/Gemini model configuration, calls by stage, tokens, API-cost basis and fallback.
+- **Business credits:** verified success/failure/edit behavior.
+- **Tests run:** exact commands and observed results.
+- **Not implemented/mocked:** explicit list.
+- **Known defects/risks:** severity and evidence.
+- **Production integration:** verified adapters and anything unconnected.
+- **Next action:** smallest concrete remaining task.
+
+Never say “complete,” “tested,” “production-ready,” or “deployed” without evidence for that exact claim.

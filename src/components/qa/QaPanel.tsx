@@ -42,7 +42,7 @@ export const QaPanel: React.FC<Props> = ({ document, onClose }) => {
         </div>
 
         <div style={{ textAlign: 'right' }}>
-          <div style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 600 }}>ACCEPTANCE VERDICT</div>
+          <div style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 600 }}>PUBLISH GATE</div>
           <div
             style={{
               display: 'inline-block',
@@ -50,50 +50,72 @@ export const QaPanel: React.FC<Props> = ({ document, onClose }) => {
               padding: '6px 14px',
               borderRadius: 6,
               fontWeight: 800,
-              fontSize: '1rem',
-              background: report.verdict === 'GO' ? '#065f46' : '#7f1d1d',
+              fontSize: '0.95rem',
+              background: report.canPublish ? '#065f46' : '#7f1d1d',
               color: '#fff',
             }}
           >
-            {report.verdict}
+            {report.canPublish ? 'READY TO PUBLISH' : 'BLOCKED'}
+          </div>
+          <div style={{ fontSize: '0.72rem', color: '#94a3b8', marginTop: 4 }}>
+            {report.blockerCount} Blockers · {report.warningCount} Warnings
           </div>
         </div>
       </div>
 
       {/* Checks List */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 10 }}>
-        {report.checks.map((check) => (
-          <div
-            key={check.id}
-            style={{
-              padding: '12px 14px',
-              borderRadius: 6,
-              background: '#0f172a',
-              border: check.passed ? '1px solid #334155' : '1px solid #ef4444',
-            }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
-              <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#f8fafc' }}>
-                {check.name}
-              </span>
-              <span
-                style={{
-                  fontSize: '0.7rem',
-                  fontWeight: 700,
-                  padding: '2px 8px',
-                  borderRadius: 999,
-                  background: check.passed ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)',
-                  color: check.passed ? '#34d399' : '#f87171',
-                }}
-              >
-                {check.passed ? 'PASS' : check.severity}
-              </span>
+        {report.checks.map((check) => {
+          const badgeBg = !check.passed
+            ? check.classification === 'Blocker'
+              ? 'rgba(239, 68, 68, 0.2)'
+              : 'rgba(245, 158, 11, 0.2)'
+            : 'rgba(16, 185, 129, 0.2)';
+
+          const badgeColor = !check.passed
+            ? check.classification === 'Blocker'
+              ? '#f87171'
+              : '#fbbf24'
+            : '#34d399';
+
+          return (
+            <div
+              key={check.id}
+              style={{
+                padding: '12px 14px',
+                borderRadius: 6,
+                background: '#0f172a',
+                border: check.passed
+                  ? '1px solid #334155'
+                  : check.classification === 'Blocker'
+                  ? '1px solid #ef4444'
+                  : '1px solid #f59e0b',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
+                <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#f8fafc' }}>
+                  {check.name}
+                </span>
+                <span
+                  style={{
+                    fontSize: '0.68rem',
+                    fontWeight: 700,
+                    padding: '2px 8px',
+                    borderRadius: 999,
+                    background: badgeBg,
+                    color: badgeColor,
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  {check.passed ? 'PASS' : check.classification}
+                </span>
+              </div>
+              <div style={{ fontSize: '0.78rem', color: check.passed ? '#94a3b8' : check.classification === 'Blocker' ? '#fca5a5' : '#fde68a', lineHeight: 1.4 }}>
+                {check.message}
+              </div>
             </div>
-            <div style={{ fontSize: '0.78rem', color: check.passed ? '#94a3b8' : '#fca5a5', lineHeight: 1.4 }}>
-              {check.message}
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </aside>
   );

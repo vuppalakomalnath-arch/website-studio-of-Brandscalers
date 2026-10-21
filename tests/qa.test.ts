@@ -58,6 +58,34 @@ describe('Suite 6: Deterministic QA Runner Engine', () => {
     const report = runWebsiteQa(overBudgetDoc);
     const budgetCheck = report.checks.find((c) => c.id === 'QA-BUDGET-01');
     expect(budgetCheck?.passed).toBe(false);
+    expect(budgetCheck?.classification).toBe('Blocker');
+    expect(report.blockerCount).toBeGreaterThanOrEqual(1);
+    expect(report.canPublish).toBe(false);
     expect(report.verdict).toBe('NO-GO');
+  });
+
+  it('allows publishing when only warnings or info notes are present', () => {
+    // Introduce a warning: duplicate hero section on home page triggers QA-A11Y-01 Warning
+    const docWithWarning: WebsiteDocument = {
+      ...doc,
+      pages: doc.pages.map((p) => {
+        if (p.slug === 'home') {
+          const hero = p.sections.find((s) => s.type === 'hero-split');
+          return {
+            ...p,
+            sections: hero ? [...p.sections, { ...hero, id: 'extra-hero' }] : p.sections,
+          };
+        }
+        return p;
+      }),
+    };
+
+    const report = runWebsiteQa(docWithWarning);
+    const a11yCheck = report.checks.find((c) => c.id === 'QA-A11Y-01');
+    expect(a11yCheck?.passed).toBe(false);
+    expect(a11yCheck?.classification).toBe('Warning');
+    expect(report.warningCount).toBe(1);
+    expect(report.blockerCount).toBe(0);
+    expect(report.canPublish).toBe(true);
   });
 });

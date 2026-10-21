@@ -11,6 +11,7 @@ import { IntakeModal } from '@/components/intake/IntakeModal';
 import { SectionEditor } from '@/components/editor/SectionEditor';
 import { QaPanel } from '@/components/qa/QaPanel';
 import { ExportModal } from '@/components/export/ExportModal';
+import { PublishModal } from '@/components/export/PublishModal';
 
 type ViewportMode = '1440' | '768' | '390' | '360';
 
@@ -25,6 +26,7 @@ export default function BuilderPage() {
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [isQaOpen, setIsQaOpen] = useState(false);
   const [isExportOpen, setIsExportOpen] = useState(false);
+  const [isPublishOpen, setIsPublishOpen] = useState(false);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -220,6 +222,25 @@ export default function BuilderPage() {
           >
             📦 Export
           </button>
+
+          <button
+            onClick={() => setIsPublishOpen(true)}
+            style={{
+              background: '#059669',
+              color: '#ffffff',
+              border: 'none',
+              borderRadius: 6,
+              padding: '6px 14px',
+              fontSize: '0.82rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+            }}
+          >
+            🚀 Publish
+          </button>
         </div>
       </header>
 
@@ -247,11 +268,14 @@ export default function BuilderPage() {
           ))}
         </div>
 
-        <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
+        <div style={{ fontSize: '0.8rem', color: '#64748b', display: 'flex', alignItems: 'center' }}>
           <span>Family: <strong style={{ color: '#38bdf8' }}>{currentDoc.design.family}</strong></span>
           <span style={{ marginLeft: 16 }}>Preset: <strong style={{ color: '#f8fafc' }}>{currentDoc.design.preset}</strong></span>
           <span style={{ marginLeft: 16 }}>
             Budget: <strong style={{ color: '#10b981' }}>{currentDoc.generation.actualCredits} / 250 credits</strong>
+          </span>
+          <span style={{ marginLeft: 16, color: '#94a3b8' }}>
+            Est. Provider Cost: <strong style={{ color: '#38bdf8' }}>${(currentDoc.generation.actualCredits * 0.000002).toFixed(5)}</strong>
           </span>
           {currentDoc.generation.isMocked ? (
             <span style={{ marginLeft: 12, background: '#b45309', color: '#fff', fontSize: '0.7rem', padding: '2px 8px', borderRadius: 4, fontWeight: 700 }}>
@@ -270,9 +294,11 @@ export default function BuilderPage() {
         <div className="preview-container">
           <div
             className="preview-viewport-frame"
+            data-viewport={viewport}
             style={{
               width: viewportWidth,
               maxWidth: viewport === '1440' ? '1280px' : viewportWidth,
+              containerType: 'inline-size',
             }}
           >
             <WebsiteRenderer
@@ -317,6 +343,12 @@ export default function BuilderPage() {
         isOpen={isExportOpen}
         document={currentDoc}
         onClose={() => setIsExportOpen(false)}
+      />
+
+      <PublishModal
+        isOpen={isPublishOpen}
+        document={currentDoc}
+        onClose={() => setIsPublishOpen(false)}
       />
 
       {/* Toast Feedback */}

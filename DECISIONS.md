@@ -79,3 +79,36 @@
   1. Automated test suite using Vitest/Playwright for CLI regression tests.
   2. Built-in interactive QA Panel in the UI (`src/engine/qa/`) that evaluates the active `WebsiteDocument` against 15+ automated checks (H1 count, slug uniqueness, link resolution, CTA validity, form fields, viewport compliance) and outputs an interactive score and log.
 * **Impact:** Visible proof of quality directly inside the presentation demo.
+
+---
+
+## Decision 9: Deterministic Local Inference & Adaptive Question Engine
+* **Context:** Legacy intake suffered from cognitive overload (20+ questions) and asked irrelevant domain questions (e.g. asking dental clinics or consulting firms whether they want to ship physical goods or configure shopping carts). Model-driven dynamic questioning was too slow, non-deterministic, and costly.
+* **Decision:** Implement a 4-stage streamlined workflow:
+  1. Minimal 3-field intake: `businessName`, `category`, and `offerDescription`.
+  2. Zero-AI TypeScript rules engine (`inferBusinessProfile` in `src/engine/inference/rules.ts`): transparent regex matching mapping 14 canonical business archetypes (`healthcare`, `ecommerce`, `catalogue`, `local-service`, `agency`, `portfolio`, `restaurant`, `education`, `event-venue`, `hospitality`, `nonprofit`, `personal-brand`, `lead-gen`, `mixed-other`), scoring confidence, and recommending primary journey and CTA strategies with zero model calls.
+  3. Bounded Gemini ambiguity fallback (`classifyAmbiguity`): only invoked if deterministic confidence is low or contradictory keywords exist.
+  4. Adaptive question catalog (`src/engine/adaptive-questions/catalog.ts`): deterministic filtering with an explicit `aiCallPolicy: 'never'` guard that strictly prevents product, inventory, or cart questions for non-retail archetypes.
+  5. Reviewable & editable site plan before launch.
+* **Impact:** Eliminates irrelevant questions, speeds up onboarding to under 30 seconds, and consumes 0 credits/API tokens during the entire intake phase.
+
+---
+
+## Decision 10: Separation of Provider USD Telemetry from Business Credits
+* **Context:** Business credits (capped at 250 credits per generation with 0 credits for failed operations) represent customer pricing units, whereas Google Gemini API tokens represent provider cost. Conflating them obscured true infrastructure margin and violated the evolving spec.
+* **Decision:** Maintain two distinct accounting systems in `src/engine/generation/budget.ts`:
+  1. Customer Business Credits: Enforced via `BudgetGuard` (hard cap 250 credits, zero charge on failure).
+  2. Provider USD Telemetry: Calculated in `UsageLedger` using official Google Gemini 3.5 Flash Lite rates ($0.075 / 1M prompt tokens, $0.30 / 1M candidate tokens), tracking latency, prompt versions, retries, and correlation IDs without storing keys or private secrets.
+* **Impact:** Clean financial transparency, predictable customer billing, and precise provider margin tracking.
+
+---
+
+## Decision 11: Candidate QA Gating & Honest Standalone Publishing
+* **Context:** Publishing unverified sites or claiming fake production deployments (like claiming DNS records were created or database mutations occurred when running in an isolated vertical slice) violates user trust and spec honesty rules.
+* **Decision:** Build a zero-call publishing adapter (`src/engine/export/publish-adapter.ts`) and modal:
+  1. Executes `runWebsiteQa(candidateDoc)` before publishing.
+  2. Blocks publishing if `blockerCount > 0` (`canPublish: false`), displaying exact blocker reasons.
+  3. Preserves previous published document snapshot on any failure.
+  4. Explicitly labels standalone demo publication: `[DEMO MODE: Site exported to verified BrandScalers bundle; standalone vertical slice has no live DNS or external hosting connected]`.
+* **Impact:** 100% truthful demo mode, zero hallucinated deployments, and strict protection against broken sites being published.
+

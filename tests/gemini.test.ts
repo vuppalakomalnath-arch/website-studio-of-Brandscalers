@@ -46,4 +46,22 @@ describe('GeminiProvider Integration & Resilience', () => {
       expect(ledger.getCommittedCredits()).toBe(0);
     }
   }, 30000);
+
+  it('classifies an ambiguous brief or falls back safely to deterministic rules', async () => {
+    const provider = new GeminiProvider();
+    const ledger = new UsageLedger(250);
+
+    const inference = await provider.classifyAmbiguity(
+      {
+        businessName: 'Lumina Craft',
+        category: 'Not sure / Recommend for me',
+        offerDescription: 'Handmade ceramic tableware and artisanal stoneware mugs',
+      },
+      ledger
+    );
+
+    expect(inference).toBeDefined();
+    expect(['catalogue', 'ecommerce']).toContain(inference.primaryArchetype);
+    expect(inference.candidatePages.length).toBeGreaterThanOrEqual(4);
+  }, 30000);
 });
